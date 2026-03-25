@@ -10,8 +10,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import com.xinyi.androidbasic.utils.LogUtil
-import com.xinyi.scheduler.proxy.ThreadHandlerProxy
-import com.xinyi.scheduler.thread.ThreadHandler
+import com.xinyi.beehive.core.ThreadHandler
+import com.xinyi.beehive.proxy.ThreadHandlerProxy
 import razerdp.basepopup.BasePopupWindow
 
 /**

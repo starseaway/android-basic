@@ -5,8 +5,8 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.6.1"
 material = "1.9.0"
-kotlin = "1.7.20"
-kapt = "1.7.20"
+kotlin = "1.9.0"
+kapt = "1.9.0"
 taskBeehive = "2.0.0"
 
 [libraries]

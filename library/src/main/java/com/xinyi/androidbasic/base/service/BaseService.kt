@@ -3,8 +3,8 @@ package com.xinyi.androidbasic.base.service
 import android.app.Service
 import android.os.Handler
 import android.os.Message
-import com.xinyi.scheduler.proxy.ThreadHandlerProxy
-import com.xinyi.scheduler.thread.ThreadHandler
+import com.xinyi.beehive.core.ThreadHandler
+import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
 /**
  * Service基类, 主要封装工作线程的handler处理器
