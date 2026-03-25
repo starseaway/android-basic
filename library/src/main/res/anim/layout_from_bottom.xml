@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+举例：布局从下面进入的动画 ->
+android:layoutAnimation="@anim/layout_from_bottom"
+-->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/layout_from_bottom_item"
+    android:animationOrder="normal"
+    android:delay="15%" />

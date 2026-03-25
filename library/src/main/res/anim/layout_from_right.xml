@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+举例：条目从右边进入动画，执行列表动画 ->
+mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_from_right));
+mRecyclerView.scheduleLayoutAnimation();
+-->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/layout_from_right_item"
+    android:animationOrder="normal"
+    android:delay="10%" />

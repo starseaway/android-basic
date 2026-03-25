@@ -1,0 +1,75 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+android {
+    namespace 'com.xinyi.androidbasic'
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 19
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    packagingOptions {
+        // 剔除这个包下的所有文件（不会移除签名信息）
+        exclude 'META-INF/*******'
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'io.jitpack'
+            artifactId = 'library'
+            version = '1.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
+
+dependencies {
+    // databinding依赖
+    implementation 'androidx.databinding:databinding-runtime:4.1.1'
+
+    // Material 库：https://github.com/material-components/material-components-android
+    implementation 'com.google.android.material:material:1.8.0'
+
+    // 添加 AndroidX Core KTX 依赖
+    implementation 'androidx.core:core-ktx:1.7.0'
+
+    // Android下打造通用便捷的PopupWindow弹窗库：https://github.com/razerdp/BasePopup
+    api 'io.github.razerdp:BasePopup:3.2.1'
+
+    // 任务调度框架
+    api 'com.github.starseaway:task-beehive:2.0.0'
+}

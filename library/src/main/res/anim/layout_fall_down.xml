@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+举例：落下的动画，执行列表动画：
+mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_fall_down));
+mRecyclerView.scheduleLayoutAnimation();
+或者：<LinearLayout android:layoutAnimation="@anim/layout_fall_down" />
+-->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/layout_fall_down_item"
+    android:animationOrder="normal"
+    android:delay="15%" />

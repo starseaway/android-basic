@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Basic</string>
+    <string name="read_local_null_text">读取资源为空</string>
+</resources>

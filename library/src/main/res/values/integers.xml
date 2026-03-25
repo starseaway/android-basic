@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 窗口动画持续时间-->
+    <integer name="window_anim_duration">400</integer>
+</resources>

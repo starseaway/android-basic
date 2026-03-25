@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 自定义基础对话框主题 -->
+    <style name="BaseDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <!-- 让 Dialog 无边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- Dialog 是否为浮动窗口（默认 true，可省略） -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否启用半透明遮罩层（默认 true） -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 遮罩层的透明度（0.0f 完全透明，1.0f 完全不透明，默认 0.6f） -->
+        <item name="android:backgroundDimAmount">0.5</item>
+        <!-- 背景透明 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 去掉默认的 Dialog 标题栏 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 禁止标题栏 ActionBar（确保不会显示 ToolBar 或 ActionBar） -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- 让 ActionMode 覆盖 ActionBar（如长按文本弹出操作栏） -->
+        <item name="windowActionModeOverlay">true</item>
+        <!-- 移除 Dialog 默认的内容阴影 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 允许 Dialog 沉浸式显示到状态栏下（如实现透明状态栏） -->
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="21">true</item>
+        <!-- 是否让状态栏背景透明（可让 Dialog 适应沉浸式状态栏） -->
+        <item name="android:statusBarColor" tools:targetApi="21">@android:color/transparent</item>
+        <!-- 是否让导航栏背景透明 -->
+        <item name="android:navigationBarColor" tools:targetApi="21">@android:color/transparent</item>
+        <!-- Dialog 是否占满整个屏幕 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 打开动画 -->
+        <item name="android:windowEnterAnimation">@anim/window_scale_in</item>
+        <!-- 关闭动画-->
+        <item name="android:windowExitAnimation">@anim/window_scale_out</item>
+        <!-- 让 Dialog 避免键盘遮挡（`adjustResize` 让 Dialog 调整布局，`adjustPan` 让内容整体上移） -->
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <!-- 适配横竖屏切换，防止 Dialog 重新创建 -->
+        <item name="android:configChanges">orientation|screenSize|keyboardHidden</item>
+        <!-- 让 Dialog 在状态栏下浮动，适用于沉浸式效果 -->
+        <item name="android:fitsSystemWindows">false</item>
+        <!-- 是否允许点击外部关闭 Dialog（true: 允许，false: 禁止） -->
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <!-- Dialog 是否拥有焦点（避免被其他 UI 影响） -->
+        <item name="android:focusable">true</item>
+    </style>
+</resources>
