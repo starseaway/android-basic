@@ -9,7 +9,7 @@ import androidx.databinding.ViewDataBinding
  * @author 新一
  * @date 2024/9/30 14:40
  */
-abstract class BaseViewBindingActivity<VDB : ViewDataBinding> : BaseActivity() {
+abstract class BaseViewBindingActivity<VDB : ViewDataBinding> : BaseResultActivity() {
 
     private lateinit var _binding: VDB
 

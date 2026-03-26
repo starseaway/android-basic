@@ -43,13 +43,13 @@ maven {
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
 dependencies {
-    implementation 'com.github.starseaway:android-basic:1.6.0'
+    implementation 'com.github.starseaway:android-basic:1.6.1'
 }
 ```
 
 ```kotlin
 dependencies {
-    implementation("com.github.starseaway:android-basic:1.6.0")
+    implementation("com.github.starseaway:android-basic:1.6.1")
 }
 ```
 
