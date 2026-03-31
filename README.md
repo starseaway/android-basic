@@ -4,6 +4,10 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
+![Version](https://img.shields.io/badge/version-1.6.2-blue)
+![License](https://img.shields.io/badge/license-Apache%202.0-green)
+![API](https://img.shields.io/badge/API-19%2B-brightgreen)
+
 ## 一、模块简介
 
 这是一个精简的 Android 基础模块，不包含具体业务逻辑，主要对常用的基类、管理类、工具类以及开发能力做了一层统一封装。
@@ -43,13 +47,13 @@ maven {
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
 dependencies {
-    implementation 'com.github.starseaway:android-basic:1.6.1'
+    implementation 'com.github.starseaway:android-basic:1.6.2'
 }
 ```
 
 ```kotlin
 dependencies {
-    implementation("com.github.starseaway:android-basic:1.6.1")
+    implementation("com.github.starseaway:android-basic:1.6.2")
 }
 ```
 
@@ -262,6 +266,9 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### v1.6.2 (2026-03-31)
+- build: 修改 agp 构建版本
 
 ### V1.6.0 (2026-03-25)
 - 此版本正式在 GitHub 开源发布
