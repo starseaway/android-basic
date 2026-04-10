@@ -20,7 +20,7 @@ import com.xinyi.androidbasic.app.AppContext
 /**
  * 通过资源ID获取strings.xml字符串
  */
-fun @receiver:StringRes Int.getString(): String {
+public fun @receiver:StringRes Int.getString(): String {
     return AppContext.sApplication.getString(this)
 }
 
@@ -29,27 +29,27 @@ fun @receiver:StringRes Int.getString(): String {
  *
  * @param formatArgs 格式化参数
  */
-fun @receiver:StringRes Int.getString(vararg formatArgs: String): String {
+public fun @receiver:StringRes Int.getString(vararg formatArgs: String): String {
     return AppContext.sApplication.getString(this, *formatArgs)
 }
 
 /**
  * 获取颜色
  */
-fun @receiver:ColorRes Int.getColor(): Int {
+public fun @receiver:ColorRes Int.getColor(): Int {
     return ContextCompat.getColor(AppContext.sApplication, this)
 }
 
 /**
  * 获取Drawable
  */
-fun @receiver:DrawableRes Int.drawable(): Drawable? {
+public fun @receiver:DrawableRes Int.drawable(): Drawable? {
     return ContextCompat.getDrawable(AppContext.sApplication, this)
 }
 
 /**
  * 获取 font
  */
-fun @receiver:FontRes Int.getFont(): Typeface? {
+public fun @receiver:FontRes Int.getFont(): Typeface? {
     return ResourcesCompat.getFont(AppContext.sApplication, this)
 }

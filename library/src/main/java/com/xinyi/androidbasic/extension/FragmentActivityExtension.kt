@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentTransaction
  * @param frameId 容器id
  * @param fragment 碎片
  */
-fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameId: Int) {
+public fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameId: Int) {
     supportFragmentManager.transact {
         replace(frameId, fragment)
     }
@@ -33,7 +33,7 @@ fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameI
  * @param enter 进入动画
  * @param exit 出去动画
  */
-fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameId: Int, enter: Int, exit: Int) {
+public fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameId: Int, enter: Int, exit: Int) {
     supportFragmentManager.transact {
         setCustomAnimations(enter, exit)
         replace(frameId, fragment)
@@ -46,7 +46,7 @@ fun FragmentActivity.replaceFragmentInActivity(fragment: Fragment, @IdRes frameI
  * @param fragment 碎片
  * @param tag 标签
  */
-fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String) {
+public fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String) {
     supportFragmentManager.transact {
         add(fragment, tag)
     }
@@ -59,7 +59,7 @@ fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String) {
  * @param tag 标签
  * @param frameId 容器id
  */
-fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String, @IdRes frameId: Int) {
+public fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String, @IdRes frameId: Int) {
     supportFragmentManager.transact {
         add(frameId, fragment, tag)
     }
@@ -70,7 +70,7 @@ fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String, @IdR
  *
  * @param fragment 碎片
  */
-fun FragmentActivity.removeFragmentInActivity(fragment: Fragment) {
+public fun FragmentActivity.removeFragmentInActivity(fragment: Fragment) {
     supportFragmentManager.transact {
         remove(fragment)
     }
@@ -82,7 +82,7 @@ fun FragmentActivity.removeFragmentInActivity(fragment: Fragment) {
  * @param show 显示的碎片
  * @param hides 需要隐藏的碎片
  */
-fun FragmentActivity.showAndHideFragmentInFragment(show: Fragment, vararg hides: Fragment?) {
+public fun FragmentActivity.showAndHideFragmentInFragment(show: Fragment, vararg hides: Fragment?) {
     supportFragmentManager.transact {
         hides.forEach { hideFragment -> hideFragment?.let { hide(it) } }
         show(show)
@@ -92,7 +92,7 @@ fun FragmentActivity.showAndHideFragmentInFragment(show: Fragment, vararg hides:
 /**
  * 碎片事务提交
  */
-private inline fun FragmentManager.transact(action: FragmentTransaction.() -> Unit) {
+public inline fun FragmentManager.transact(action: FragmentTransaction.() -> Unit) {
     beginTransaction().apply {
         action()
     }.commit()

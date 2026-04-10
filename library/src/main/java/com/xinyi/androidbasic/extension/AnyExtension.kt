@@ -10,7 +10,7 @@ package com.xinyi.androidbasic.extension
 /**
  * 获取一个对象的独一无二的字符串标记（运行期唯一）
  */
-fun Any.getUniqueTag(): String {
+public fun Any.getUniqueTag(): String {
     // 对象所在的包名 @ 对象的内存地址
     return "${this.javaClass.name}@${Integer.toHexString(System.identityHashCode(this))}"
 }
@@ -20,7 +20,7 @@ fun Any.getUniqueTag(): String {
  *
  * 输出格式：ClassName@hash: toString()
  */
-fun Any?.debugInfo(): String {
+public fun Any?.debugInfo(): String {
     if (this == null) return "null"
     return buildString {
         append(this@debugInfo.javaClass.simpleName)
@@ -37,7 +37,7 @@ fun Any?.debugInfo(): String {
  * @param block 执行逻辑
  * @return 成功返回结果，失败返回 null
  */
-inline fun <T, R> T.runSafely(block: (T) -> R): R? {
+public inline fun <T, R> T.runSafely(block: (T) -> R): R? {
     return try {
         block(this)
     } catch (throwable: Throwable) {
@@ -52,7 +52,7 @@ inline fun <T, R> T.runSafely(block: (T) -> R): R? {
  * @param block 主逻辑
  * @param finallyBlock 收尾逻辑
  */
-inline fun <T, R> T.runWithFinally(block: (T) -> R, finallyBlock: () -> Unit): R {
+public inline fun <T, R> T.runWithFinally(block: (T) -> R, finallyBlock: () -> Unit): R {
     return try {
         block(this)
     } finally {
@@ -63,14 +63,14 @@ inline fun <T, R> T.runWithFinally(block: (T) -> R, finallyBlock: () -> Unit): R
 /**
  * 判断对象是否为指定类型
  */
-inline fun <reified T> Any?.isType(): Boolean = this is T
+public inline fun <reified T> Any?.isType(): Boolean = this is T
 
 /**
  * 当对象是指定类型时执行逻辑
  *
  * @param block 类型匹配后的操作
  */
-inline fun <reified T> Any?.doIfInstance(block: (T) -> Unit) {
+public inline fun <reified T> Any?.doIfInstance(block: (T) -> Unit) {
     if (this is T) block(this)
 }
 
@@ -79,7 +79,7 @@ inline fun <reified T> Any?.doIfInstance(block: (T) -> Unit) {
  *
  * @param default 默认值
  */
-inline fun <reified T> Any?.castOr(default: T): T {
+public inline fun <reified T> Any?.castOr(default: T): T {
     return this as? T ?: default
 }
 
@@ -89,7 +89,7 @@ inline fun <reified T> Any?.castOr(default: T): T {
  * @param message 错误信息
  * @throws IllegalStateException 当对象为 null 时
  */
-fun <T : Any> T?.requireNotNull(message: String = "Value should not be null"): T {
+public fun <T : Any> T?.requireNotNull(message: String = "Value should not be null"): T {
     return this ?: throw IllegalStateException(message)
 }
 
@@ -99,7 +99,7 @@ fun <T : Any> T?.requireNotNull(message: String = "Value should not be null"): T
  * @param condition 条件
  * @param block 执行逻辑
  */
-inline fun <T> T.doIf(condition: Boolean, block: (T) -> Unit): T {
+public inline fun <T> T.doIf(condition: Boolean, block: (T) -> Unit): T {
     if (condition) block(this)
     return this
 }
@@ -109,7 +109,7 @@ inline fun <T> T.doIf(condition: Boolean, block: (T) -> Unit): T {
  *
  * 类似 also，但语义更偏向“副作用”
  */
-inline fun <T> T.tap(block: (T) -> Unit): T {
+public inline fun <T> T.tap(block: (T) -> Unit): T {
     block(this)
     return this
 }
@@ -120,7 +120,7 @@ inline fun <T> T.tap(block: (T) -> Unit): T {
  * @param condition 条件
  * @param newValue 新值生成逻辑
  */
-inline fun <T> T.replaceIf(condition: Boolean, newValue: () -> T): T {
+public inline fun <T> T.replaceIf(condition: Boolean, newValue: () -> T): T {
     return if (condition) newValue() else this
 }
 
@@ -129,14 +129,14 @@ inline fun <T> T.replaceIf(condition: Boolean, newValue: () -> T): T {
  *
  * @param nullValue 当对象为 null 时返回值
  */
-fun Any?.toStringOr(nullValue: String = ""): String {
+public fun Any?.toStringOr(nullValue: String = ""): String {
     return this?.toString() ?: nullValue
 }
 
 /**
  * 安全比较两个对象是否相等
  */
-fun Any?.isEquals(other: Any?): Boolean {
+public fun Any?.isEquals(other: Any?): Boolean {
     return this == other
 }
 
@@ -154,7 +154,7 @@ fun Any?.isEquals(other: Any?): Boolean {
  *   }
  * ```
  */
-inline fun <T> T.measureTime(block: (T) -> Unit): Long {
+public inline fun <T> T.measureTime(block: (T) -> Unit): Long {
     val start = System.currentTimeMillis()
     block(this)
     return System.currentTimeMillis() - start
@@ -173,7 +173,7 @@ inline fun <T> T.measureTime(block: (T) -> Unit): Long {
  * }
  * ```
  */
-inline fun <T, R> T.measureTime(block: (T) -> R): Pair<R, Long> {
+public inline fun <T, R> T.measureTime(block: (T) -> R): Pair<R, Long> {
     val start = System.currentTimeMillis()
     val result = block(this)
     val cost = System.currentTimeMillis() - start
