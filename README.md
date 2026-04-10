@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.6.2-blue)
+![Version](https://img.shields.io/badge/version-1.6.4-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -47,13 +47,13 @@ maven {
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
 dependencies {
-    implementation 'com.github.starseaway:android-basic:1.6.2'
+    implementation 'com.github.starseaway:android-basic:1.6.4'
 }
 ```
 
 ```kotlin
 dependencies {
-    implementation("com.github.starseaway:android-basic:1.6.2")
+    implementation("com.github.starseaway:android-basic:1.6.4")
 }
 ```
 
@@ -267,7 +267,10 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### v1.6.2 (2026-03-31)
+### V1.6.4 (2026-04-10)
+- 升级 kotlin 版本
+
+### V1.6.2 (2026-03-31)
 - build: 修改 agp 构建版本
 
 ### V1.6.0 (2026-03-25)
