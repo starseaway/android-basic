@@ -71,5 +71,5 @@ dependencies {
     api 'io.github.razerdp:BasePopup:3.2.1'
 
     // 任务调度框架
-    api 'com.github.starseaway:task-beehive:2.0.0'
+    api 'com.github.starseaway:task-beehive:2.0.1'
 }
