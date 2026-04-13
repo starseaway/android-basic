@@ -5,7 +5,7 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 import androidx.collection.ArrayMap
-import com.xinyi.androidbasic.extension.getUniqueTag
+import com.xinyi.androidbasic.extension.AnyExtension.getUniqueTag
 import com.xinyi.androidbasic.utils.LogUtil
 
 /**

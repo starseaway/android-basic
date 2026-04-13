@@ -1,7 +1,7 @@
 package com.xinyi.androidbasic.base.repository
 
 import com.xinyi.androidbasic.R
-import com.xinyi.androidbasic.extension.getString
+import com.xinyi.androidbasic.extension.ResourcesExtension.getString
 import com.xinyi.androidbasic.model.Resource
 import com.xinyi.androidbasic.model.ResponseData
 import kotlinx.coroutines.Dispatchers
