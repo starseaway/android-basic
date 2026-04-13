@@ -16,40 +16,47 @@ import com.xinyi.androidbasic.app.AppContext
  * @author 新一
  * @date 2025/3/3 17:35
  */
+object ResourcesExtension {
 
-/**
- * 通过资源ID获取strings.xml字符串
- */
-public fun @receiver:StringRes Int.getString(): String {
-    return AppContext.sApplication.getString(this)
-}
+    /**
+     * 通过资源ID获取strings.xml字符串
+     */
+    @JvmStatic
+    fun @receiver:StringRes Int.getString(): String {
+        return AppContext.sApplication.getString(this)
+    }
 
-/**
- * 通过资源ID获取strings.xml字符串
- *
- * @param formatArgs 格式化参数
- */
-public fun @receiver:StringRes Int.getString(vararg formatArgs: String): String {
-    return AppContext.sApplication.getString(this, *formatArgs)
-}
+    /**
+     * 通过资源ID获取strings.xml字符串
+     *
+     * @param formatArgs 格式化参数
+     */
+    @JvmStatic
+    fun @receiver:StringRes Int.getString(vararg formatArgs: String): String {
+        return AppContext.sApplication.getString(this, *formatArgs)
+    }
 
-/**
- * 获取颜色
- */
-public fun @receiver:ColorRes Int.getColor(): Int {
-    return ContextCompat.getColor(AppContext.sApplication, this)
-}
+    /**
+     * 获取颜色
+     */
+    @JvmStatic
+    fun @receiver:ColorRes Int.getColor(): Int {
+        return ContextCompat.getColor(AppContext.sApplication, this)
+    }
 
-/**
- * 获取Drawable
- */
-public fun @receiver:DrawableRes Int.drawable(): Drawable? {
-    return ContextCompat.getDrawable(AppContext.sApplication, this)
-}
+    /**
+     * 获取Drawable
+     */
+    @JvmStatic
+    fun @receiver:DrawableRes Int.drawable(): Drawable? {
+        return ContextCompat.getDrawable(AppContext.sApplication, this)
+    }
 
-/**
- * 获取 font
- */
-public fun @receiver:FontRes Int.getFont(): Typeface? {
-    return ResourcesCompat.getFont(AppContext.sApplication, this)
+    /**
+     * 获取 font
+     */
+    @JvmStatic
+    fun @receiver:FontRes Int.getFont(): Typeface? {
+        return ResourcesCompat.getFont(AppContext.sApplication, this)
+    }
 }
