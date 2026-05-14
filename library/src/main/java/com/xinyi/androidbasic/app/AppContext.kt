@@ -3,6 +3,7 @@ package com.xinyi.androidbasic.app
 import android.app.Application
 import android.content.Context
 import com.xinyi.androidbasic.action.HandlerAction
+import com.xinyi.beehive.TaskBeehive
 
 /**
  * 全局上下文
@@ -35,5 +36,6 @@ object AppContext : HandlerAction {
     @JvmStatic
     fun init(context: Context) {
         _sApplication = context.applicationContext as Application
+        TaskBeehive.init(context)
     }
 }
