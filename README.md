@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.6.5-blue)
+![Version](https://img.shields.io/badge/version-1.6.6-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -47,13 +47,13 @@ maven {
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
 dependencies {
-    implementation 'com.github.starseaway:android-basic:1.6.5'
+    implementation 'com.github.starseaway:android-basic:1.6.6'
 }
 ```
 
 ```kotlin
 dependencies {
-    implementation("com.github.starseaway:android-basic:1.6.5")
+    implementation("com.github.starseaway:android-basic:1.6.6")
 }
 ```
 
@@ -266,6 +266,11 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V1.6.6 (2026-05-14)
+- 🐞 fix: 修复 ActivityResult 现象上失效的 BUG，实际 requestCode 丢失。
+- 🦄 refactor: 重构 BaseResultActivity 为单请求-单回传模型
+- 🚀 perf: 优化 ActivityResultLauncher 生命周期管理
 
 ### V1.6.5 (2026-04-13)
 - 扩展函数统一添加 object 包裹，优化结构与命名空间

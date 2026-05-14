@@ -2,11 +2,8 @@ package com.xinyi.androidbasic.base.activity
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
-import android.util.SparseArray
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 
 /**
  * 封装 Activity 回传基类
@@ -16,88 +13,80 @@ import androidx.activity.result.contract.ActivityResultContracts
  */
 abstract class BaseResultActivity : BaseActivity() {
 
-    companion object {
+    private companion object {
 
-        /** 请求码键 */
-        private const val EXTRA_REQUEST_CODE = "request_code"
+        /**
+         * Activity 跳转结果契约
+         *
+         * 用于启动 Activity 并接收回传结果
+         */
+        val START_ACTIVITY_FOR_RESULT = ActivityResultContracts.StartActivityForResult()
     }
 
-    /** Activity 回调集合  */
-    private var mActivityCallbacks: SparseArray<OnActivityCallback>? = null
-
-
     /**
-     * Activity 结果回调
+     * 当前 Activity 回调
      */
-    private lateinit var mActivityResultLauncher: ActivityResultLauncher<Intent>
+    private var mActivityCallback: OnActivityCallback? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // 初始化 Activity 结果回调 [新版的跳转回传最低支持到SDK21]
-        val startActForResult = ActivityResultContracts.StartActivityForResult()
-        mActivityResultLauncher = registerForActivityResult(startActForResult, ::onActivityResult)
+    /**
+     * Activity Result 启动器
+     *
+     * 新版 Activity 回传 API，最低支持 SDK21
+     */
+    private val mActivityResultLauncher = registerForActivityResult(START_ACTIVITY_FOR_RESULT) { result ->
+        // 处理 Activity 返回结果
+        mActivityCallback?.handleActivityResult(result.resultCode, result.data)
+        // 防止内存泄漏
+        mActivityCallback = null
     }
 
     /**
-     * 启动 Activity（基于 Class），并接收返回结果
+     * 启动 Activity（基于 Class）
      *
      * 对 startActivityForResult 的简化封装，内部自动构建 Intent
      *
      * @param clazz 目标 Activity 类型
      * @param callback 结果回调
      */
-    open fun startActivityForResult(clazz: Class<out Activity?>?, callback: OnActivityCallback?) {
+    open fun startActivityForResult(clazz: Class<out Activity>, callback: OnActivityCallback) {
         startActivityForResult(Intent(this, clazz), callback)
     }
 
     /**
-     * 启动 Activity（基于 Intent），并接收返回结果
+     * 启动 Activity（基于 Intent）
      *
      * @param intent 启动参数
      * @param callback 结果回调
      */
-    open fun startActivityForResult(intent: Intent, callback: OnActivityCallback?) {
+    open fun startActivityForResult(intent: Intent, callback: OnActivityCallback) {
         startActivityForResult(intent, null, callback)
     }
 
     /**
-     * 启动 Activity（支持 options），并接收返回结果
+     * 启动 Activity（支持 options）
      *
-     * 为每次请求分配唯一 requestCode，并建立回调映射关系。
+     * 当前采用单请求-单回传模型，同一时间仅允许存在一个待回传请求。
+     * 如果上一次请求尚未完成时再次发起请求，会抛出 IllegalStateException 异常。
+     *
+     * 如需支持多并发回传：
+     * - 建议业务层自行管理多个 ActivityResultLauncher
+     * - 或基于业务场景实现请求队列机制
      *
      * @param intent 启动参数
-     * @param options 启动附加参数（如动画等）
+     * @param options 启动附加参数
      * @param callback 结果回调
      */
-    open fun startActivityForResult(intent: Intent, options: Bundle?, callback: OnActivityCallback?) {
-        if (mActivityCallbacks == null) {
-            mActivityCallbacks = SparseArray<OnActivityCallback>(1)
+    open fun startActivityForResult(intent: Intent, options: ActivityOptionsCompat?, callback: OnActivityCallback) {
+        check(mActivityCallback == null) {
+            "Another ActivityResult request is already in progress."
         }
-        // 生成唯一的请求代码
-        val requestCode = (System.currentTimeMillis() % 65536).toInt()
-        mActivityCallbacks?.put(requestCode, callback)
-        intent.putExtra(EXTRA_REQUEST_CODE, requestCode)
-        mActivityResultLauncher.launch(intent)
-    }
 
-    /**
-     * 处理 Activity 返回结果
-     *
-     * 会根据 requestCode 分发对应的回调
-     *
-     * @param result ActivityResult 回调结果
-     */
-    open fun onActivityResult(result: ActivityResult) {
-        if (result.resultCode == RESULT_OK) {
-            // 获取数据并通过请求码找到对应的回调
-            val data = result.data
-            mActivityCallbacks?.let { callbacks ->
-                // 通过从返回数据中获取请求码来找到对应的回调
-                val requestCode = data?.getIntExtra(EXTRA_REQUEST_CODE, -1) ?: -1
-                val callback = callbacks[requestCode]
-                callback?.onActivityResult(result.resultCode, data)
-            }
+        mActivityCallback = callback
+
+        if (options != null) {
+            mActivityResultLauncher.launch(intent, options)
+        } else {
+            mActivityResultLauncher.launch(intent)
         }
     }
 
@@ -112,6 +101,6 @@ abstract class BaseResultActivity : BaseActivity() {
          * @param resultCode 结果码
          * @param data 数据
          */
-        fun onActivityResult(resultCode: Int, data: Intent?)
+        fun handleActivityResult(resultCode: Int, data: Intent?)
     }
 }
