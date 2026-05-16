@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.7.0-blue)
+![Version](https://img.shields.io/badge/version-1.7.1-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -47,13 +47,13 @@ maven {
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
 dependencies {
-    implementation 'com.github.starseaway:android-basic:1.7.0'
+    implementation 'com.github.starseaway:android-basic:1.7.1'
 }
 ```
 
 ```kotlin
 dependencies {
-    implementation("com.github.starseaway:android-basic:1.7.0")
+    implementation("com.github.starseaway:android-basic:1.7.1")
 }
 ```
 
@@ -267,7 +267,7 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### V1.7.0 (2026-05-16)
+### V1.7.1 (2026-05-16)
 - 🦄 refactor: 重构 Dialog 基础架构，将 BaseDialog 从 Dialog 升级为 AppCompatDialog，兼容现代 Android UI 生态能力。
 
 ### V1.6.6 (2026-05-14)
