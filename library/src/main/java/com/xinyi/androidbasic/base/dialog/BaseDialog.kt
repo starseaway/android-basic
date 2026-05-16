@@ -1,8 +1,8 @@
 package com.xinyi.androidbasic.base.dialog
 
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.Gravity
@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import androidx.annotation.FloatRange
 import androidx.annotation.StyleRes
+import androidx.appcompat.app.AppCompatDialog
 import com.xinyi.androidbasic.R
 import com.xinyi.androidbasic.action.ActivityAction
 import androidx.core.graphics.drawable.toDrawable
@@ -23,7 +24,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/9/30 16:20
  */
-abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, ActivityAction {
+abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProxy, ActivityAction {
 
     companion object {
         /** 没有动画效果  */
@@ -40,12 +41,6 @@ abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, Activit
         var ANIM_LEFT: Int = R.style.LeftAnimStyle
         /** 右边弹出动画  */
         var ANIM_RIGHT: Int = R.style.RightAnimStyle
-    }
-
-    init {
-        window?.attributes?.gravity = Gravity.CENTER
-        window?.setBackgroundDrawable(0.toDrawable()) // 去除窗口透明部分显示的黑色
-        initDialog()
     }
 
     /**
@@ -75,12 +70,19 @@ abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, Activit
      */
     private var mThreadHandler: ThreadHandler? = null
 
-    private fun initDialog() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 去除窗口透明部分显示的黑色
+        window?.setBackgroundDrawable(0.toDrawable())
+
+        setGravity()
+
         setCanceledOnTouchOutside(canceled())
         setCancelable(canceled())
-        setGravity() // 统一默认重心为居中
 
         setDialogContentView()
+
         initViews()
         initParams()
         initListeners()
@@ -159,7 +161,7 @@ abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, Activit
     }
 
     fun show(x: Int, y: Int) {
-        onWindowAttributesChanged(
+        updateWindowAttributes(
             x,
             y,
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -170,7 +172,7 @@ abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, Activit
     }
 
     fun show(x: Int, y: Int, gravity: Int) {
-        onWindowAttributesChanged(
+        updateWindowAttributes(
             x,
             y,
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -181,20 +183,22 @@ abstract class BaseDialog: Dialog, Handler.Callback, ThreadHandlerProxy, Activit
     }
 
     /**
+     * 更新 Dialog 窗口属性
+     *
      * @param x 设置水平偏移
      * @param y 设置垂直偏移
      * @param width 宽
      * @param height 高
      * @param gravity 重心
      */
-    private fun onWindowAttributesChanged(x: Int, y: Int, width: Int, height: Int, gravity: Int) {
-        val params = window?.attributes
-        params?.width = width
-        params?.height = height
-        params?.x = x
-        params?.y = y
-        params?.gravity = gravity
-        onWindowAttributesChanged(params)
+    private fun updateWindowAttributes(x: Int, y: Int, width: Int, height: Int, gravity: Int) {
+        window?.attributes = window?.attributes?.apply {
+            this.width = width
+            this.height = height
+            this.x = x
+            this.y = y
+            this.gravity = gravity
+        }
     }
 
     /**
