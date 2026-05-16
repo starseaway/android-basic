@@ -24,17 +24,26 @@ abstract class BaseViewBindingDialog<VDB : ViewDataBinding> : BaseDialog {
 
     constructor(context: Context) : super(context)
 
-    private lateinit var _binding: VDB
+    /**
+     * 获取 ViewBinding 对象，采用懒加载方式初始化 Binding
+     */
+    private val bindingInflater by lazy(LazyThreadSafetyMode.NONE) {
+        DataBindingUtil.inflate<VDB>(
+            LayoutInflater.from(context),
+            initLayoutId(),
+            null,
+            false
+        )
+    }
 
     /**
-     * 获取ViewBinding对象
+     * 获取 ViewBinding 对象
      */
-    val binding: VDB get() = _binding
+    protected val binding: VDB
+        get() = bindingInflater
 
-    override fun setDialogContentView() {
-        // 初始化ViewBinding
-        _binding = DataBindingUtil.inflate(LayoutInflater.from(context), initLayoutId(), null, false)
-        setContentView(_binding.root)
+    init {
+        setContentView(binding.root)
         initObserveUI()
     }
 

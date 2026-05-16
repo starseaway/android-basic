@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -44,6 +45,15 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     }
 
     /**
+     * 是否已经设置过 ContentView
+     */
+    private var _isContentViewInstalled = false
+    val isContentViewInstalled: Boolean
+        get() = _isContentViewInstalled
+
+    /**
+     * 构造函数
+     *
      * @param context 上下文
      * @param cancelable 是否可以取消
      * @param cancelListener 添加取消监听
@@ -55,12 +65,16 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     ) : super(context, cancelable, cancelListener)
 
     /**
+     * 构造函数
+     *
      * @param context 上下文
      * @param theme 主题
      */
     constructor(context: Context, theme: Int) : super(context, theme)
 
     /**
+     * 构造函数
+     *
      * @param context 上下文
      */
     constructor(context: Context) : super(context)
@@ -81,7 +95,10 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
         setCanceledOnTouchOutside(canceled())
         setCancelable(canceled())
 
-        setDialogContentView()
+        // 防止子类提前调用 setContentView 后重复安装 ContentView
+        if (!isContentViewInstalled) {
+            setDialogContentView()
+        }
 
         initViews()
         initParams()
@@ -93,6 +110,21 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
      */
     protected open fun setDialogContentView() {
         setContentView(initLayoutId())
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        _isContentViewInstalled = true
+    }
+
+    override fun setContentView(view: View) {
+        super.setContentView(view)
+        _isContentViewInstalled = true
+    }
+
+    override fun setContentView(view: View, params: ViewGroup.LayoutParams?) {
+        super.setContentView(view, params)
+        _isContentViewInstalled = true
     }
 
     /**
