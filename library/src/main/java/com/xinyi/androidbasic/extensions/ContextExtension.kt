@@ -1,4 +1,4 @@
-package com.xinyi.androidbasic.extension
+package com.xinyi.androidbasic.extensions
 
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 /**
- * 按类型区分的Context扩展函数
+ * 按类型区分的 Context 扩展函数
  * 
  * @author 新一
  * @date 2025/3/3 17:34

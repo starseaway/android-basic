@@ -1,4 +1,4 @@
-package com.xinyi.androidbasic.extension
+package com.xinyi.androidbasic.extensions
 
 /**
  * Any 扩展函数集合
@@ -152,47 +152,5 @@ object AnyExtension  {
     @JvmStatic
     fun Any?.isEquals(other: Any?): Boolean {
         return this == other
-    }
-
-    /**
-     * 统计代码执行耗时（毫秒）
-     *
-     * @param block 执行逻辑
-     * @return 耗时（ms）
-     *
-     * 示例代码：
-     * ```kotlin
-     *   // cost 为 heavyTask() 方法执行的总耗时
-     *   val cost = obj.measureTime {
-     *        heavyTask()
-     *   }
-     * ```
-     */
-    @JvmStatic
-    inline fun <T> T.measureTime(block: (T) -> Unit): Long {
-        val start = System.currentTimeMillis()
-        block(this)
-        return System.currentTimeMillis() - start
-    }
-
-    /**
-     * 统计代码执行耗时（毫秒），并返回执行结果
-     *
-     * @param block 执行逻辑
-     * @return Pair<结果, 耗时(ms)>
-     *
-     * 示例代码：
-     * ```kotlin
-     * val (result, cost) = obj.measureTime {
-     *     heavyTask()
-     * }
-     * ```
-     */
-    @JvmStatic
-    inline fun <T, R> T.measureTime(block: (T) -> R): Pair<R, Long> {
-        val start = System.currentTimeMillis()
-        val result = block(this)
-        val cost = System.currentTimeMillis() - start
-        return result to cost
     }
 }

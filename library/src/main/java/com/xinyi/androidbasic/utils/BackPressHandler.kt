@@ -3,7 +3,6 @@ package com.xinyi.androidbasic.utils
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.os.Build
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -12,7 +11,7 @@ import androidx.annotation.RequiresApi
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import androidx.fragment.app.Fragment
-import com.xinyi.androidbasic.extension.ContextExtension.findActivity
+import com.xinyi.androidbasic.extensions.ContextExtension.findActivity
 
 /**
  * 系统返回键事件监听与处理的工具类
@@ -29,7 +28,7 @@ object BackPressHandler {
     /**
      * 注册返回键监听
      *
-     * @param host 任意支持的宿主类型（Activity、Fragment、Dialog、View、Context（必须是activity的））
+     * @param host 任意支持的宿主类型（Activity、Fragment、Dialog、View、Context（必须是 activity 的））
      * @param onBack 当用户按下返回键时执行的回调逻辑：
      *               返回 true 表示拦截（消费）事件；
      *               返回 false 表示放行（继续执行系统返回）。

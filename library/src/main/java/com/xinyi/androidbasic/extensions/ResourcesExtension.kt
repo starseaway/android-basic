@@ -1,4 +1,4 @@
-package com.xinyi.androidbasic.extension
+package com.xinyi.androidbasic.extensions
 
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -11,7 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.xinyi.androidbasic.app.AppContext
 
 /**
- * id资源获取的扩展函数
+ * 用于 ID 资源获取的扩展函数
  * 
  * @author 新一
  * @date 2025/3/3 17:35
@@ -19,7 +19,7 @@ import com.xinyi.androidbasic.app.AppContext
 object ResourcesExtension {
 
     /**
-     * 通过资源ID获取strings.xml字符串
+     * 通过资源 ID 获取 strings.xml 字符串
      */
     @JvmStatic
     fun @receiver:StringRes Int.getString(): String {
@@ -27,7 +27,7 @@ object ResourcesExtension {
     }
 
     /**
-     * 通过资源ID获取strings.xml字符串
+     * 通过资源 ID 获取 strings.xml 字符串
      *
      * @param formatArgs 格式化参数
      */
@@ -45,7 +45,7 @@ object ResourcesExtension {
     }
 
     /**
-     * 获取Drawable
+     * 获取 Drawable
      */
     @JvmStatic
     fun @receiver:DrawableRes Int.drawable(): Drawable? {
@@ -53,7 +53,7 @@ object ResourcesExtension {
     }
 
     /**
-     * 获取 font
+     * 获取 Font
      */
     @JvmStatic
     fun @receiver:FontRes Int.getFont(): Typeface? {

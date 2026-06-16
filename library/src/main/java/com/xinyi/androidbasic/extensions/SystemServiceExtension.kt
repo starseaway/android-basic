@@ -1,4 +1,4 @@
-package com.xinyi.androidbasic.extension
+package com.xinyi.androidbasic.extensions
 
 import android.app.*
 import android.app.job.JobScheduler

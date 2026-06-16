@@ -1,4 +1,4 @@
-package com.xinyi.androidbasic.extension
+package com.xinyi.androidbasic.extensions
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
@@ -17,7 +17,7 @@ object FragmentActivityExtension {
     /**
      * 替换碎片
      *
-     * @param frameId 容器id
+     * @param frameId 容器 id
      * @param fragment 碎片
      */
     @JvmStatic
@@ -31,7 +31,7 @@ object FragmentActivityExtension {
      * 替换碎片
      *
      * @param fragment 碎片
-     * @param frameId 容器id
+     * @param frameId 容器 id
      * @param enter 进入动画
      * @param exit 出去动画
      */
@@ -61,7 +61,7 @@ object FragmentActivityExtension {
      *
      * @param fragment 碎片
      * @param tag 标签
-     * @param frameId 容器id
+     * @param frameId 容器 id
      */
     @JvmStatic
     fun FragmentActivity.addFragmentToActivity(fragment: Fragment, tag: String, @IdRes frameId: Int) {

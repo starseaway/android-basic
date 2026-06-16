@@ -1,14 +1,9 @@
 package com.xinyi.androidbasic.model
 
 /**
- * 资源类用于表示数据加载的状态。
- * @param T 表示成功状态时返回的数据类型。
+ * 用于表示数据加载的状态
  *
- * 该密封类具有三个子类：
- *
- * - [Loading] 表示数据正在加载中
- * - [Success] 包含加载成功的数据
- * - [Fail] 包含加载失败时的异常信息
+ * @param T 表示状态进行时返回的数据类型
  *
  * @author 新一
  * @date 2024/9/24 21:10
