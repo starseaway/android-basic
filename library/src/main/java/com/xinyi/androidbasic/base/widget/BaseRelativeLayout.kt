@@ -118,13 +118,25 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
     }
 
     /**
+     * 是否启用线程处理器
+     *
+     * 默认关闭，子类可按需开启。
+     */
+    protected open fun isThreadHandlerEnabled(): Boolean = false
+
+    /**
      * 在视图附加到窗口时调用
      */
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (mThreadHandler == null) {
-            mThreadHandler = ThreadHandler.createHandler(this, this::class.java.simpleName)
+
+        if (isThreadHandlerEnabled() && mThreadHandler == null) {
+            mThreadHandler = ThreadHandler.createHandler(
+                this,
+                this::class.java.simpleName
+            )
         }
+
         onResume()
     }
 
@@ -138,8 +150,12 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
     override fun onDetachedFromWindow() {
         onPause()
         super.onDetachedFromWindow()
-        mThreadHandler?.quitSafely()
-        mThreadHandler = null
+
+        if (isThreadHandlerEnabled()) {
+            mThreadHandler?.quitSafely()
+            mThreadHandler = null
+        }
+
         onDestroy()
     }
 

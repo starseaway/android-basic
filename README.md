@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.8.1-blue)
+![Version](https://img.shields.io/badge/version-1.8.2-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -30,7 +30,13 @@
 
 ## 二、SDK 适用范围
 
-- Android SDK 版本：Min SDK 19（Android 4.4）及以上
+## 二、SDK 适用范围
+
+| 项目         | 要求                 |
+|------------|--------------------|
+| Min SDK    | 19（Android 4.4）及以上 |
+| JVM Target | 1.8                |
+| Kotlin     | 1.9+               |
 
 --- 
 
@@ -46,11 +52,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.8.1'
+implementation 'com.github.starseaway:android-basic:1.8.2'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.8.1")
+implementation("com.github.starseaway:android-basic:1.8.2")
 ```
 
 ### 3. 初始化模块
@@ -262,6 +268,10 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V1.8.2 (2026-07-02)
+- ✨ feat: 给 Layout 基类新增线程处理器开关，默认关闭
+- 📦 deps: kotlin 支持 1.9+
 
 ### V1.8.1 (2026-07-02)
 - ✨ feat: 修改 Activity View Bind 基类中的 binding 对象，改为受保护
