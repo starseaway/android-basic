@@ -40,7 +40,7 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
 
         dealIntent(intent)
 
-        setContentView()
+        bindContentView()
         initViews()
         initParams(savedInstanceState)
         initListeners()
@@ -57,7 +57,7 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
     /**
      * 设置内容视图
      */
-    protected open fun setContentView() {
+    protected open fun bindContentView() {
         if (initLayoutId() > 0) {
             setContentView(initLayoutId())
             initSoftKeyboard()

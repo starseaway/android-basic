@@ -11,16 +11,16 @@ import androidx.databinding.ViewDataBinding
  */
 abstract class BaseViewBindingActivity<VDB : ViewDataBinding> : BaseResultActivity() {
 
-    private lateinit var _binding: VDB
+    protected lateinit var varBinding: VDB
 
     /**
      * 获取ViewBinding对象
      */
-    val binding: VDB get() = _binding
+    val binding: VDB get() = varBinding
 
-    override fun setContentView() {
-        _binding = DataBindingUtil.setContentView(this, initLayoutId())
-        _binding.root.setOnClickListener {
+    override fun bindContentView() {
+        varBinding = DataBindingUtil.setContentView(this, initLayoutId())
+        varBinding.root.setOnClickListener {
             // 隐藏软键，避免内存泄漏
             hideKeyboard(currentFocus)
         }
