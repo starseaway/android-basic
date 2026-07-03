@@ -6,7 +6,6 @@ import android.os.Message
 import android.util.AttributeSet
 import android.widget.RelativeLayout
 import androidx.annotation.CallSuper
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.xinyi.androidbasic.action.ActivityAction
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
@@ -66,8 +65,8 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
      * 构造初始化
      */
     private fun initialize(attrs: AttributeSet?) {
-        attributeSet = attrs
         inflateLayoutContentView()
+        initStyledAttributes(attrs)
     }
 
     /**
@@ -75,18 +74,6 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
      */
     protected open fun inflateLayoutContentView() {
         inflate(context, initLayoutId(), this)
-    }
-
-    /**
-     * 当 View 及其 XML 中声明的所有子 View 完成 Inflate 后调用
-     *
-     * 此时当前对象及子类成员均已完成初始化，且布局层级已经构建完成。
-     */
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        initStyledAttributes(attributeSet)
-        initViews()
     }
 
     /**
@@ -99,6 +86,7 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
 
         isInitialized = true
 
+        initViews()
         initParams()
         initListeners()
     }

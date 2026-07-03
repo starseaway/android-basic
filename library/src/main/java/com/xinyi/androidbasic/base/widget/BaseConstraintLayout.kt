@@ -36,11 +36,6 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
     private var isResume: Boolean = false
 
     /**
-     * 属性集
-     */
-    private var attributeSet: AttributeSet? = null
-
-    /**
      * 构造方法
      */
     constructor(context: Context) : super(context) {
@@ -65,8 +60,8 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
      * 构造初始化
      */
     private fun initialize(attrs: AttributeSet?) {
-        attributeSet = attrs
         inflateLayoutContentView()
+        initStyledAttributes(attrs)
     }
 
     /**
@@ -74,18 +69,6 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
      */
     protected open fun inflateLayoutContentView() {
         inflate(context, initLayoutId(), this)
-    }
-
-   /**
-    * 当 View 及其 XML 中声明的所有子 View 完成 Inflate 后调用
-    *
-    * 此时当前对象及子类成员均已完成初始化，且布局层级已经构建完成。
-    */
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-       initStyledAttributes(attributeSet)
-       initViews()
     }
 
     /**
@@ -98,6 +81,7 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
 
         isInitialized = true
 
+        initViews()
         initParams()
         initListeners()
     }

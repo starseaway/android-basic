@@ -52,11 +52,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.8.7'
+implementation 'com.github.starseaway:android-basic:1.8.9'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.8.7")
+implementation("com.github.starseaway:android-basic:1.8.9")
 ```
 
 ### 3. 初始化模块
@@ -269,7 +269,7 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### V1.8.7 (2026-07-04)
+### V1.8.9 (2026-07-04)
 - ♻️ refactor: 重构 Layout 初始化流程链。
 - 🐞 fix: 修复构造阶段调用子类初始化方法导致成员变量未完成初始化而引发的 NPE。
 - ✨ feat: 兼容 XML 与代码创建两种场景，保证初始化仅执行一次，并保持布局属性与生命周期行为一致。
