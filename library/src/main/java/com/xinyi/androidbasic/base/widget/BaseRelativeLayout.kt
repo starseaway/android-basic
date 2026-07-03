@@ -45,11 +45,24 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
      */
     private var isResume: Boolean = false
 
+    /**
+     * 初始化控件
+     */
     private fun initWidget(attrs: AttributeSet?) {
         setLayoutContentView()
-
         initViews()
+
+        // 等当前构造链结束、子类成员初始化完成后再执行
+        post { completeLateInit(attrs) }
+    }
+
+    /**
+     * 完成延后初始化
+     */
+    private fun completeLateInit(attrs: AttributeSet?) {
         initStyledAttributes(attrs)
+
+        // 初始化参数、监听
         initParams()
         initListeners()
     }
@@ -69,8 +82,6 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
 
     /**
      * 初始化布局 ID
-     *
-     * @return 返回 ID
      */
     protected abstract fun initLayoutId(): Int
 
@@ -90,7 +101,7 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
     protected open fun initListeners() {}
 
     /**
-     * 初始化UI观察
+     * 初始化 UI 观察
      */
     @CallSuper
     protected open fun onResume() {

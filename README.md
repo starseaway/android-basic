@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.8.2-blue)
+![Version](https://img.shields.io/badge/version-1.8.3-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -52,11 +52,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.8.2'
+implementation 'com.github.starseaway:android-basic:1.8.3'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.8.2")
+implementation("com.github.starseaway:android-basic:1.8.3")
 ```
 
 ### 3. 初始化模块
@@ -268,6 +268,10 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V1.8.3 (2026-07-03)
+- 🐞 fix: 延后各个 Layout 子类初始化链，修复自定义控件 NPE 异常；
+构造阶段仅 inflate 布局，initStyledAttributes/initParams/initListeners 改由 post 执行，避免子类成员未初始化时被访问。
 
 ### V1.8.2 (2026-07-02)
 - ✨ feat: 给 Layout 基类新增线程处理器开关，默认关闭

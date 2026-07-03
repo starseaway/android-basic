@@ -40,11 +40,24 @@ abstract class BaseFrameLayout: FrameLayout, Handler.Callback, ActivityAction, T
      */
     private var isResume: Boolean = false
 
+    /**
+     * 初始化控件
+     */
     private fun initWidget(attrs: AttributeSet?) {
         setLayoutContentView()
-
         initViews()
+
+        // 等当前构造链结束、子类成员初始化完成后再执行
+        post { completeLateInit(attrs) }
+    }
+
+    /**
+     * 完成延后初始化
+     */
+    private fun completeLateInit(attrs: AttributeSet?) {
         initStyledAttributes(attrs)
+
+        // 初始化参数、监听
         initParams()
         initListeners()
     }
@@ -58,14 +71,13 @@ abstract class BaseFrameLayout: FrameLayout, Handler.Callback, ActivityAction, T
 
     /**
      * 初始化样式属性
+     *
      * @param attrs 属性集
      */
     protected open fun initStyledAttributes(attrs: AttributeSet?) {}
 
     /**
-     * 初始化布局ID
-     *
-     * @return 返回ID
+     * 初始化布局 ID
      */
     protected abstract fun initLayoutId(): Int
 
@@ -85,7 +97,7 @@ abstract class BaseFrameLayout: FrameLayout, Handler.Callback, ActivityAction, T
     protected open fun initListeners() {}
 
     /**
-     * 初始化UI观察
+     * 初始化 UI 观察
      */
     @CallSuper
     protected open fun onResume() {
@@ -106,7 +118,7 @@ abstract class BaseFrameLayout: FrameLayout, Handler.Callback, ActivityAction, T
     protected open fun onDestroy() {}
 
     /**
-     * 是否处于Resume状态
+     * 是否处于 Resume 状态
      */
     fun isResume(): Boolean {
         return isResume
