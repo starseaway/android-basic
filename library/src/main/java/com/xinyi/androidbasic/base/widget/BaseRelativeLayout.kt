@@ -11,29 +11,26 @@ import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
 /**
- * 自定义 RelativeLayout 基类, 主要封装了 Handler 消息处理和线程操作以及生命周期管理
+ * 自定义 RelativeLayout 基类
+ *
+ * 主要封装了 Handler 消息处理和线程操作以及生命周期管理
  *
  * @author 新一
  * @date 2024/10/8 9:17
  */
-abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAction,
+abstract class BaseRelativeLayout @JvmOverloads constructor(
+    context: Context,
+    private val attributeSet: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : RelativeLayout(context, attributeSet, defStyleAttr),
+    Handler.Callback,
+    ActivityAction,
     ThreadHandlerProxy {
 
-    constructor(context: Context?) : super(context!!) {
-        initWidget(null)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs) {
-        initWidget(attrs)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context!!,
-        attrs,
-        defStyleAttr
-    ) {
-        initWidget(attrs)
-    }
+    /**
+     * 是否已完成初始化
+     */
+    private var isInitialized = false
 
     /**
      * 线程处理器
@@ -45,37 +42,47 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
      */
     private var isResume: Boolean = false
 
-    /**
-     * 初始化控件
-     */
-    private fun initWidget(attrs: AttributeSet?) {
-        setLayoutContentView()
-        initViews()
-
-        // 等当前构造链结束、子类成员初始化完成后再执行
-        post { completeLateInit(attrs) }
+    init {
+        inflateLayoutContentView()
     }
 
     /**
-     * 完成延后初始化
+     * 加载布局内容
      */
-    private fun completeLateInit(attrs: AttributeSet?) {
-        initStyledAttributes(attrs)
+    protected open fun inflateLayoutContentView() {
+        inflate(context, initLayoutId(), this)
+    }
 
-        // 初始化参数、监听
+    /**
+     * 当 View 及其 XML 中声明的所有子 View 完成 Inflate 后调用
+     *
+     * 此时当前对象及子类成员均已完成初始化，且布局层级已经构建完成。
+     */
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
+        performInitialize()
+    }
+
+    /**
+     * 完成初始化，仅执行一次
+     */
+    private fun performInitialize() {
+        if (isInitialized) {
+            return
+        }
+
+        isInitialized = true
+
+        initStyledAttributes(attributeSet)
+        initViews()
         initParams()
         initListeners()
     }
 
     /**
-     * 设置布局内容视图
-     */
-    protected open fun setLayoutContentView() {
-        inflate(context, initLayoutId(), this)
-    }
-
-    /**
      * 初始化样式属性
+     *
      * @param attrs 属性集
      */
     protected open fun initStyledAttributes(attrs: AttributeSet?) {}
@@ -141,6 +148,9 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
+        // 兼容代码创建 View 的场景（代码创建不会回调 onFinishInflate）
+        performInitialize()
+
         if (isThreadHandlerEnabled() && mThreadHandler == null) {
             mThreadHandler = ThreadHandler.createHandler(
                 this,
@@ -171,7 +181,7 @@ abstract class BaseRelativeLayout: RelativeLayout, Handler.Callback, ActivityAct
     }
 
     /**
-     * 处理消息
+     * 处理 Handle 消息
      */
     override fun handleMessage(msg: Message): Boolean {
         return false

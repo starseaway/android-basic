@@ -12,23 +12,28 @@ import androidx.databinding.ViewDataBinding
  * @author 新一
  * @date 2024/10/8 9:39
  */
-abstract class BaseViewBindingConstraintLayout <VDB : ViewDataBinding> : BaseConstraintLayout {
-
-    constructor(context: Context?) : super(context!!)
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs)
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context!!, attrs, defStyleAttr)
-
-    private lateinit var _binding: VDB
+abstract class BaseViewBindingConstraintLayout<VDB : ViewDataBinding> @JvmOverloads constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : BaseConstraintLayout(context, attributeSet, defStyleAttr) {
 
     /**
-     * 获取ViewBinding对象
+     * 可变 binding
      */
-    val binding: VDB get() = _binding
+    protected lateinit var varBinding: VDB
 
-    override fun setLayoutContentView() {
+    /**
+     * 获取 ViewBinding 对象
+     */
+    val binding: VDB get() = varBinding
+
+
+    override fun inflateLayoutContentView() {
         // 通过 DataBindingUtil.inflate 方法将布局文件转换为 ViewDataBinding 对象
-        _binding = DataBindingUtil.inflate(LayoutInflater.from(context), initLayoutId(), this, true)
+        varBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(context),
+            initLayoutId(), this, true
+        )
     }
 }

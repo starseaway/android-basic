@@ -11,10 +11,13 @@ import androidx.databinding.ViewDataBinding
  */
 abstract class BaseViewBindingActivity<VDB : ViewDataBinding> : BaseResultActivity() {
 
+    /**
+     * 可变 binding
+     */
     protected lateinit var varBinding: VDB
 
     /**
-     * 获取ViewBinding对象
+     * 获取 ViewBinding 对象
      */
     val binding: VDB get() = varBinding
 
