@@ -54,17 +54,6 @@ abstract class BaseLinearLayout @JvmOverloads constructor(
     }
 
     /**
-     * 当 View 及其 XML 中声明的所有子 View 完成 Inflate 后调用
-     *
-     * 此时当前对象及子类成员均已完成初始化，且布局层级已经构建完成。
-     */
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        performInitialize()
-    }
-
-    /**
      * 完成初始化，仅执行一次
      */
     private fun performInitialize() {
@@ -148,15 +137,15 @@ abstract class BaseLinearLayout @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        // 兼容代码创建 View 的场景（代码创建不会回调 onFinishInflate）
-        performInitialize()
-
         if (isThreadHandlerEnabled() && mThreadHandler == null) {
             mThreadHandler = ThreadHandler.createHandler(
                 this,
                 this::class.java.simpleName
             )
         }
+
+        // 执行界面参数初始化
+        performInitialize()
 
         onResume()
     }

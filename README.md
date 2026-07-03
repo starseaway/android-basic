@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.8.4-blue)
+![Version](https://img.shields.io/badge/version-1.8.5-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -52,11 +52,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.8.4'
+implementation 'com.github.starseaway:android-basic:1.8.5'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.8.4")
+implementation("com.github.starseaway:android-basic:1.8.5")
 ```
 
 ### 3. 初始化模块
@@ -269,8 +269,8 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### V1.8.4 (2026-07-04)
-- ♻️ refactor: 重构 Layout 初始化流程链，统一在 `onFinishInflate` 回调。
+### V1.8.5 (2026-07-04)
+- ♻️ refactor: 重构 Layout 初始化流程链，统一在 `onAttachedToWindow` 回调。
 - 🐞 fix: 修复构造阶段调用子类初始化方法导致成员变量未完成初始化而引发的 NPE。
 - ✨ feat: 兼容 XML 与代码创建两种场景，保证初始化仅执行一次，并保持布局属性与生命周期行为一致。
 
@@ -311,47 +311,47 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 - 补充常用扩展函数
 
 ### V1.5.3 (2025-12-11)
-- 修复多 Layout 布局的列表适配器，条目注册的条目时机有问题的bug
+- 修复多 Layout 布局的列表适配器，条目注册的条目时机有问题的 bug
 
 ### V1.5.2 (2025-10-10)
 - 封装局部刷新与 `payload` 相关的一些方法
 
 ### V1.5.1 (2025-09-05)
-- 修复popup在kotlin的情况下，构造传入参数后在onViewCreated里未获取到值的bug
+- 修复 popup 在 kotlin 的情况下，构造传入参数后在 onViewCreated 里未获取到值的 bug
 
 ### V1.5.0 (2025-06-04)
-- 重构旧版适配器，修复binding错乱的bug。
-- 新增了多布局的适配器，支持单ViewHolder类型多布局，和多ViewHolder类型的使用
+- 重构旧版适配器，修复 binding 错乱的bug。
+- 新增了多布局的适配器，支持单 ViewHolder 类型多布局，和多 ViewHolder 类型的使用
 
 ### V1.4.0 (2025-06-03)
-- 新增Service系列基类封装
+- 新增 Service 系列基类封装
 - 优化软键盘操作动作接口类
 
 ### V1.3.1 (2025-05-22)
-- 更换BaseViewBindingAdapter里默认的ViewHolder的创建实现
+- 更换 BaseViewBindingAdapter 里默认的 ViewHolder 的创建实现
 
 ### V1.3.0 (2025-04-21)
-- 新增一个超级好用的RecyclerView的Adapter。但是保留了旧版的BaseAdapter，以便于向下兼容。
+- 新增一个超级好用的 RecyclerView 的 Adapter。但是保留了旧版的 BaseAdapter，以便于向下兼容。
 
 ### V1.2.4 (2025-04-17)
 - 添加了一个键盘意图的接口类
 
 ### V1.2.2 (2025-04-15)
-- BaseActivity基类增加对initLayoutId的非零判断
+- BaseActivity 基类增加对 initLayoutId 的非零判断
 
 ### V1.2.1 (2025-04-9)
-- 兼容性更新，降低对kotlin插件版本的要求，支持kotlin 1.6.10及以上版本。
+- 兼容性更新，降低对 kotlin 插件版本的要求，支持 kotlin 1.6.10 及以上版本。
 
 ### V1.1.3 (2025-04-9)
-- 降级dataBinding库的版本，增强对低版本Android的兼容性。
-- 降级material库的版本，增强对低版本Android的兼容性。
-- 降级core-ktx库的版本，增强对低版本Android的兼容性。
+- 降级 dataBinding 库的版本，增强对低版本 Android 的兼容性。
+- 降级 material 库的版本，增强对低版本 Android 的兼容性。
+- 降级 core-ktx 库的版本，增强对低版本 Android 的兼容性。
 
 ### V1.1.1 (2025-04-09)
 - 更新了任务调度模块的版本，修复了任务调度模块的一个bug。
 
 ### V1.1.0 (2025-03-31)
-- 剔除模块自带的HandlerThread，改为使用任务调度模块提供的HandlerThread。
+- 剔除模块自带的 HandlerThread，改为使用任务调度模块提供的 HandlerThread。
 
 ### V1.0.0 (2025-03-29)
-- 初始化发布，包含基础的Activity、Fragment、Adapter等基类，以及ViewDataBinding的封装类等。
+- 初始化发布，包含基础的 Activity、Fragment、Adapter 等基类，以及ViewDataBinding的封装类等。
