@@ -1,13 +1,10 @@
 package com.xinyi.androidbasic.base.widget
 
 import android.content.Context
-import android.os.Handler
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.xinyi.androidbasic.action.ActivityAction
-import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
 /**
  * BaseFrameLayout 的 ViewBinding 基类
@@ -15,14 +12,17 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/10/8 9:51
  */
-abstract class BaseViewBindingFrameLayout<VDB : ViewDataBinding> @JvmOverloads constructor(
-    context: Context,
-    attributeSet: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : BaseFrameLayout(context, attributeSet, defStyleAttr),
-    Handler.Callback,
-    ActivityAction,
-    ThreadHandlerProxy {
+abstract class BaseViewBindingFrameLayout<VDB : ViewDataBinding> : BaseFrameLayout {
+
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
     /**
      * 可变 binding

@@ -12,11 +12,13 @@ import androidx.databinding.ViewDataBinding
  * @author 新一
  * @date 2024/10/8 9:39
  */
-abstract class BaseViewBindingConstraintLayout<VDB : ViewDataBinding> @JvmOverloads constructor(
-    context: Context,
-    attributeSet: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : BaseConstraintLayout(context, attributeSet, defStyleAttr) {
+abstract class BaseViewBindingConstraintLayout<VDB : ViewDataBinding> : BaseConstraintLayout {
+
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     /**
      * 可变 binding

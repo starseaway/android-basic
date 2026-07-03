@@ -18,14 +18,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/10/8 9:14
  */
-abstract class BaseLinearLayout @JvmOverloads constructor(
-    context: Context,
-    private val attributeSet: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : LinearLayout(context, attributeSet, defStyleAttr),
-    Handler.Callback,
-    ActivityAction,
-    ThreadHandlerProxy {
+abstract class BaseLinearLayout : LinearLayout, Handler.Callback, ActivityAction, ThreadHandlerProxy {
 
     /**
      * 是否已完成初始化
@@ -38,11 +31,41 @@ abstract class BaseLinearLayout @JvmOverloads constructor(
     private var mThreadHandler: ThreadHandler? = null
 
     /**
-     * 是否处于Resume状态
+     * 是否处于 Resume 状态
      */
     private var isResume: Boolean = false
 
-    init {
+    /**
+     * 属性集
+     */
+    private var attributeSet: AttributeSet? = null
+
+    /**
+     * 构造方法
+     */
+    constructor(context: Context) : super(context) {
+        initialize(null)
+    }
+
+    /**
+     * 构造方法
+     */
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        initialize(attrs)
+    }
+
+    /**
+     * 构造方法
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        initialize(attrs)
+    }
+
+    /**
+     * 构造初始化
+     */
+    private fun initialize(attrs: AttributeSet?) {
+        attributeSet = attrs
         inflateLayoutContentView()
     }
 
@@ -170,7 +193,7 @@ abstract class BaseLinearLayout @JvmOverloads constructor(
     }
 
     /**
-     * 处理 Handle 消息
+     * 处理 Handler 消息
      */
     override fun handleMessage(msg: Message): Boolean {
         return false
