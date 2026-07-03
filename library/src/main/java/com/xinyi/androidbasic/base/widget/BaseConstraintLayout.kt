@@ -76,6 +76,18 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
         inflate(context, initLayoutId(), this)
     }
 
+   /**
+    * 当 View 及其 XML 中声明的所有子 View 完成 Inflate 后调用
+    *
+    * 此时当前对象及子类成员均已完成初始化，且布局层级已经构建完成。
+    */
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
+       initStyledAttributes(attributeSet)
+       initViews()
+    }
+
     /**
      * 完成初始化，仅执行一次
      */
@@ -86,8 +98,6 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
 
         isInitialized = true
 
-        initStyledAttributes(attributeSet)
-        initViews()
         initParams()
         initListeners()
     }
