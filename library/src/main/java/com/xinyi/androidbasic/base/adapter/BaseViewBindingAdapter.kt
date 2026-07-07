@@ -2,7 +2,7 @@ package com.xinyi.androidbasic.base.adapter
 
 import android.content.Context
 import android.view.ViewGroup
-import androidx.databinding.ViewDataBinding
+import androidx.viewbinding.ViewBinding
 import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
 
 /**
@@ -13,7 +13,7 @@ import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
  * @author 新一
  * @date 2025/4/21 9:22
  */
-abstract class BaseViewBindingAdapter<M, VDB : ViewDataBinding> : BaseAdapter<M, ViewBindingViewHolder<VDB>> {
+abstract class BaseViewBindingAdapter<M, VB : ViewBinding> : BaseAdapter<M, ViewBindingViewHolder<VB>> {
 
     /**
      * 构造函数
@@ -43,7 +43,7 @@ abstract class BaseViewBindingAdapter<M, VDB : ViewDataBinding> : BaseAdapter<M,
      * @param parent 父容器 ViewGroup
      * @param viewType 当前 item 类型
      */
-    override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<VDB> {
+    override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<VB> {
         // 创建ViewHolder
         return ViewBindingViewHolder(initLayoutId(), parent)
     }
@@ -51,7 +51,7 @@ abstract class BaseViewBindingAdapter<M, VDB : ViewDataBinding> : BaseAdapter<M,
     /**
      * 绑定数据到 ViewHolder 上，用于将指定位置的数据项与其视图进行绑定。
      */
-    override fun onBindViewData(holder: ViewBindingViewHolder<VDB>, item: M, position: Int) {
+    override fun onBindViewData(holder: ViewBindingViewHolder<VB>, item: M, position: Int) {
         onBindViewDataBinding(holder.binding, item, position)
     }
 
@@ -64,5 +64,5 @@ abstract class BaseViewBindingAdapter<M, VDB : ViewDataBinding> : BaseAdapter<M,
      * @param item 当前条目的数据
      * @param position 当前条目的初始 position
      */
-    open fun onBindViewDataBinding(binding: VDB, item: M, position: Int) { }
+    open fun onBindViewDataBinding(binding: VB, item: M, position: Int) {}
 }

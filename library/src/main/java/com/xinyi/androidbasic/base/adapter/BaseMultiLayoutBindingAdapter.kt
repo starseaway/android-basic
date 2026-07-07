@@ -2,14 +2,14 @@ package com.xinyi.androidbasic.base.adapter
 
 import android.content.Context
 import android.view.ViewGroup
-import androidx.databinding.ViewDataBinding
+import androidx.viewbinding.ViewBinding
 import com.xinyi.androidbasic.base.adapter.itembinding.ViewBindingItem
 import com.xinyi.androidbasic.base.adapter.with.LambdaViewBindingItem
 import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
 
 /**
  * 支持给 RecyclerViewHolder 提供多种布局的 RecyclerView 适配器基类
- * 本类将关注布局的创建和ViewDataBinding的绑定，适配器的复用性和开发效率大大提高
+ * 本类将关注布局的创建和 ViewBinding 的绑定，适配器的复用性和开发效率大大提高
  *
  * 该类基于 viewType 机制，为不同类型的数据项提供灵活的布局支持
  * 子类只需实现对应的 viewType 和布局 ID 映射，即可轻松实现多条目展示
@@ -20,7 +20,7 @@ import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
  * @author 新一
  * @date 2025/6/4 14:21
  */
-abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingViewHolder<ViewDataBinding>> {
+abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingViewHolder<ViewBinding>> {
 
     /**
      * 构造函数
@@ -47,9 +47,9 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * 不同的 viewType 对应不同的 item
      *
      * key: viewType
-     * value: ViewDataBinding
+     * value: ViewBinding
      */
-    private val mItemTypeMap = mutableMapOf<Int, ViewBindingItem<M, out ViewDataBinding>>()
+    private val mItemTypeMap = mutableMapOf<Int, ViewBindingItem<M, out ViewBinding>>()
 
     /**
      * 返回当前 position 的 item 的 viewType
@@ -79,10 +79,10 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @param layoutId 当前视图类型的布局 ID
      * @param onBindViewData 当前视图类型的数据绑定逻辑
      */
-    fun <VDB : ViewDataBinding> registerViewType(
+    fun <VB : ViewBinding> registerViewType(
         viewType: Int,
         layoutId: Int,
-        onBindViewData: (binding: VDB, item: M, position: Int) -> Unit,
+        onBindViewData: (binding: VB, item: M, position: Int) -> Unit,
     ) {
         registerViewType(viewType, LambdaViewBindingItem(layoutId, onBindViewData))
     }
@@ -95,7 +95,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @param viewType 唯一的视图类型标识（通常使用 Int 常量）
      * @param item 当前视图类型的绑定行为，封装了布局 ID 与数据绑定逻辑
      */
-    fun <VDB : ViewDataBinding> registerViewType(viewType: Int, item: LambdaViewBindingItem<M, VDB>) {
+    fun <VB : ViewBinding> registerViewType(viewType: Int, item: LambdaViewBindingItem<M, VB>) {
         mItemTypeMap[viewType] = item
     }
 
@@ -107,7 +107,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @param viewType 唯一的视图类型标识（通常使用 Int 常量）
      * @param item 当前视图类型的绑定行为，封装了布局 ID 与数据绑定逻辑
      */
-    fun <VDB : ViewDataBinding> registerViewType(viewType: Int, item: ViewBindingItem<M, VDB>) {
+    fun <VB : ViewBinding> registerViewType(viewType: Int, item: ViewBindingItem<M, VB>) {
         mItemTypeMap[viewType] = item
     }
 
@@ -118,10 +118,9 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @return 对应的 [ViewBindingItem] 实例
      * @throws IllegalArgumentException 如果未注册该类型则抛出异常
      */
-    fun getViewBindingItem(viewType: Int): ViewBindingItem<M, out ViewDataBinding> {
+    fun getViewBindingItem(viewType: Int): ViewBindingItem<M, out ViewBinding> {
         return mItemTypeMap[viewType] ?: throw IllegalArgumentException("ViewType $viewType is not registered")
     }
-
 
     /**
      * 根据 [getItemViewType] 返回指定的 viewType 创建对应的 ViewHolder
@@ -130,7 +129,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @param viewType 当前 item 类型
      * @return 包裹 ViewBinding 的 ViewHolder
      */
-    override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<ViewDataBinding> {
+    override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<ViewBinding> {
         val item = getViewBindingItem(viewType)
         return ViewBindingViewHolder(item.initLayoutId(), parent)
     }
@@ -142,7 +141,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * @param item 当前数据项
      * @param position 当前项在列表中的位置
      */
-    override fun onBindViewData(holder: ViewBindingViewHolder<ViewDataBinding>, item: M, position: Int) {
+    override fun onBindViewData(holder: ViewBindingViewHolder<ViewBinding>, item: M, position: Int) {
         val viewType = getItemViewType(position)
         val viewItem = getViewBindingItem(viewType)
 
@@ -154,19 +153,19 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * 执行数据绑定的具体操作
      *
      * 这段代码的安全性建立在以下几个前提：
-     * 1. `viewItem` 在 `onRegisterViewBindingType` 中已经明确指定了对应的 `VDB` 类型
-     * 2. `bindItem` 方法在实际调用时，会传入与注册时类型一致的 `ViewBindingItem` 和 `ViewDataBinding`
+     * 1. `viewItem` 在 `onRegisterViewBindingType` 中已经明确指定了对应的 `VB` 类型
+     * 2. `bindItem` 方法在实际调用时，会传入与注册时类型一致的 `ViewBindingItem` 和 `ViewBinding`
      *
      * @param viewItem 注册的条目绑定器，封装了视图类型、数据绑定逻辑
-     * @param binding 当前项的 ViewBinding 实例（此时为 ViewDataBinding 类型）
+     * @param binding 当前项的 ViewBinding 实例
      * @param item 当前数据项
      * @param position 当前项在列表中的位置
      */
     @Suppress("UNCHECKED_CAST")
-    private fun <VDB : ViewDataBinding> bindItem(viewItem: ViewBindingItem<M, VDB>, binding: ViewDataBinding, item: M, position: Int) {
-        // 由于泛型擦除，binding 类型在运行时只能是 ViewDataBinding，
+    private fun <VB : ViewBinding> bindItem(viewItem: ViewBindingItem<M, VB>, binding: ViewBinding, item: M, position: Int) {
+        // 由于泛型擦除，binding 类型在运行时只能是 ViewBinding，
         // 所以此处通过强制类型转换恢复为注册时指定的具体 Binding 类型
         // 这里也是唯一的 as，但受控安全
-        viewItem.onBindViewData(binding as VDB, item, position)
+        viewItem.onBindViewData(binding as VB, item, position)
     }
 }

@@ -58,7 +58,10 @@ publishing {
 }
 
 dependencies {
-    // databinding依赖
+    // ViewBinding 接口，反射 inflate / bind 时使用
+    implementation 'androidx.databinding:viewbinding:4.1.1'
+
+    // DataBinding 编译期依赖：回退加载与 lifecycleOwner 绑定，不传递给消费方
     implementation 'androidx.databinding:databinding-runtime:4.1.1'
 
     // Material 库：https://github.com/material-components/material-components-android

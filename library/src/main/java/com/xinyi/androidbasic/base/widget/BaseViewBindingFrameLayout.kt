@@ -3,8 +3,8 @@ package com.xinyi.androidbasic.base.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
+import androidx.viewbinding.ViewBinding
+import com.xinyi.androidbasic.base.binding.BindingInflaters
 
 /**
  * BaseFrameLayout 的 ViewBinding 基类
@@ -12,7 +12,7 @@ import androidx.databinding.ViewDataBinding
  * @author 新一
  * @date 2024/10/8 9:51
  */
-abstract class BaseViewBindingFrameLayout<VDB : ViewDataBinding> : BaseFrameLayout {
+abstract class BaseViewBindingFrameLayout<VB : ViewBinding> : BaseFrameLayout {
 
     constructor(context: Context) : super(context)
 
@@ -21,24 +21,36 @@ abstract class BaseViewBindingFrameLayout<VDB : ViewDataBinding> : BaseFrameLayo
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     )
 
     /**
      * 可变 binding
      */
-    protected lateinit var varBinding: VDB
+    protected lateinit var varBinding: VB
 
     /**
      * 获取 ViewBinding 对象
      */
-    val binding: VDB get() = varBinding
+    val binding: VB get() = varBinding
 
     override fun inflateLayoutContentView() {
-        // 通过 DataBindingUtil.inflate 方法将布局文件转换为 ViewDataBinding 对象
-        varBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(context),
-            initLayoutId(), this, true
-        )
+        varBinding = inflateBinding(LayoutInflater.from(context))
+        onBindingCreated(varBinding)
     }
+
+    /**
+     * 加载 ViewBinding，子类可重写以自定义 inflate 逻辑
+     *
+     * @param inflater 布局加载器
+     * @return 绑定的 ViewBinding 对象
+     */
+    protected open fun inflateBinding(inflater: LayoutInflater): VB {
+        return BindingInflaters.inflate(context, initLayoutId(), inflater, this, true)
+    }
+
+    /**
+     * Binding 创建完成后的回调
+     */
+    protected open fun onBindingCreated(binding: VB) {}
 }
