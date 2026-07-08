@@ -13,7 +13,9 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
 import java.lang.ref.WeakReference
 
 /**
- * Fragment基类，鉴于handler在日常开发中使用频率较高，因此在基类中封装了handler的使用
+ * Fragment 基类
+ *
+ * 鉴于 Handler 在日常开发中使用频率较高，因此在基类中封装了 Handler 的使用
  *
  * @author 新一
  * @date 2024/9/30 15:35

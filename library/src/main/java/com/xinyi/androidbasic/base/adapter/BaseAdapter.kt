@@ -11,7 +11,6 @@ import androidx.core.util.forEach
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.xinyi.androidbasic.R
 
 /**
  * RecyclerView 适配器的基础抽象类。
@@ -114,7 +113,6 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
         mChildLongClickListeners?.let { listeners ->
             bindChildLongClick(holder, listeners)
         }
-        setRippleBackground(holder)
     }
 
     /**
@@ -186,15 +184,6 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
                     false
                 }
             }
-        }
-    }
-
-    /**
-     * 设置一个默认的水波纹点击动画, ⚠️ xml的ripple最低适配只在SDK 21
-     */
-    open fun setRippleBackground(holder: VH) {
-        if (holder.itemView.background == null) {
-            holder.itemView.setBackgroundResource(R.drawable.ripple_white_gray)
         }
     }
 

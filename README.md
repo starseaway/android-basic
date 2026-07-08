@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.9.0-blue)
+![Version](https://img.shields.io/badge/version-1.9.1-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -52,11 +52,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.9.0'
+implementation 'com.github.starseaway:android-basic:1.9.1'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.9.0")
+implementation("com.github.starseaway:android-basic:1.9.1")
 ```
 
 ### 3. 初始化模块
@@ -268,6 +268,13 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V1.9.1 (2026-07-08)
+- ✨ feat: 新增 `KeyboardTouchHelper`，支持点击输入框外隐藏软键盘。
+- 🦄 refactor: `BaseActivity` 改为在 `dispatchTouchEvent` 中统一处理键盘收起；
+子类可通过 `enableHideKeyboardOnTouch()` 关闭；移除 `initSoftKeyboard()` 及根布局点击方案。
+- 🚀 perf: `FragmentSwitchHelper.initialize()` 首屏使用 `commitNow()` 同步提交；Tab 切换仍保持 `commit()` 异步。
+- 🧹 remove: `BaseAdapter` 移除默认水波纹背景 `setRippleBackground()`，条目点击效果由业务层按需设置。
 
 ### V1.9.0 (2026-07-07)
 - 🦄 refactor: 将各个组件的 ViewBinding 层绑定基类的泛型约束改为 `VB : ViewBinding`，同时向下兼容 DataBinding。

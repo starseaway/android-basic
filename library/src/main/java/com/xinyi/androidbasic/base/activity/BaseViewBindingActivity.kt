@@ -25,10 +25,7 @@ abstract class BaseViewBindingActivity<VB : ViewBinding> : BaseResultActivity() 
     override fun bindContentView() {
         varBinding = inflateBinding(layoutInflater)
         setContentView(varBinding.root)
-        varBinding.root.setOnClickListener {
-            // 隐藏软键，避免内存泄漏
-            hideKeyboard(currentFocus)
-        }
+
         onBindingCreated(varBinding)
         initObserveUI()
     }

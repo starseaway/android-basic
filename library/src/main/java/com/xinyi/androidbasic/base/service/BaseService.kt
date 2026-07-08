@@ -7,7 +7,9 @@ import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
 /**
- * Service基类, 主要封装工作线程的handler处理器
+ * Service 基类
+ *
+ * 鉴于 Handler 在日常开发中使用频率较高，因此在基类中封装了 Handler 的使用
  *
  * @author 新一
  * @date 2025/6/3 9:38

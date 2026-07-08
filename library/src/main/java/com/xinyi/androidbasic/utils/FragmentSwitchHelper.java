@@ -67,14 +67,8 @@ public class FragmentSwitchHelper {
      * @param defaultTab 默认显示的 Tab
      */
     public void initialize(Bundle savedInstanceState, int defaultTab) {
-        if (savedInstanceState == null) {
-            // 第一次加载，显示默认Fragment
-            switchFragment(defaultTab);
-        } else {
-            // 恢复选中的Tab
-            int selectedTab = savedInstanceState.getInt(SELECTED_TAB, defaultTab);
-            switchFragment(selectedTab);
-        }
+        int tab = savedInstanceState == null ? defaultTab : savedInstanceState.getInt(SELECTED_TAB, defaultTab);
+        switchFragment(tab, true);
     }
 
     /**
@@ -83,6 +77,16 @@ public class FragmentSwitchHelper {
      * @param itemId 被选中的 Tab ID
      */
     public void switchFragment(int itemId) {
+        switchFragment(itemId, false);
+    }
+
+    /**
+     * 切换 Fragment
+     *
+     * @param itemId 被选中的 Tab ID
+     * @param commitNow 是否同步提交事务（首屏初始化时使用，避免空容器闪烁）
+     */
+    private void switchFragment(int itemId, boolean commitNow) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
 
         String tag = getFragmentTag(itemId);
@@ -117,7 +121,11 @@ public class FragmentSwitchHelper {
         // 更新当前Fragment
         mCurrentFragment = targetFragment;
 
-        transaction.commit();
+        if (commitNow) {
+            transaction.commitNow();
+        } else {
+            transaction.commit();
+        }
     }
 
     /**

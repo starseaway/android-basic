@@ -5,18 +5,22 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.util.Printer
+import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import com.xinyi.androidbasic.action.BundleAction
 import com.xinyi.androidbasic.action.KeyboardAction
+import com.xinyi.androidbasic.utils.KeyboardTouchHelper
 import com.xinyi.androidbasic.utils.LogUtil
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 import java.lang.ref.WeakReference
 
 /**
- * Activity基类，鉴于 handler 在日常开发中使用频率较高，因此在基类中封装了handler的使用
+ * Activity 基类
+ *
+ * 鉴于 Handler 在日常开发中使用频率较高，因此在基类中封装了 Handler 的使用
  *
  * @author 新一
  * @date 2024/9/30 14:27
@@ -60,7 +64,6 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
     protected open fun bindContentView() {
         if (initLayoutId() > 0) {
             setContentView(initLayoutId())
-            initSoftKeyboard()
         }
     }
 
@@ -96,16 +99,15 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
      */
     protected open fun initListeners() {}
 
-    /**
-     * 初始化软键盘
-     */
-    protected open fun initSoftKeyboard() {
-        // 点击外部隐藏软键盘
-        getContentView().setOnClickListener {
-            // 隐藏软键，避免内存泄漏
-            hideKeyboard(currentFocus)
-        }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        KeyboardTouchHelper.onDispatchTouch(this, ev, enableHideKeyboardOnTouch())
+        return super.dispatchTouchEvent(ev)
     }
+
+    /**
+     * 是否启用点击输入框外隐藏软键盘
+     */
+    protected open fun enableHideKeyboardOnTouch(): Boolean = true
 
     override fun finish() {
         super.finish()

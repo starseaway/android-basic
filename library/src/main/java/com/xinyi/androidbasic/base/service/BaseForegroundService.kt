@@ -4,10 +4,10 @@ import android.app.Notification
 import android.os.Build
 
 /**
- * 前台服务基类，自动启动前台通知以提升存活率。
- *
- * 子类需实现通知内容，并提供唯一通知 ID。
- *
+ * 前台服务基类
+ * 
+ * 封装前台服务的创建和通知更新，子类需实现通知内容，并提供唯一通知 ID。
+ * 
  * 继承自 [BaseService]，支持复杂的线程任务派发。
  *
  * @author 新一
