@@ -25,6 +25,7 @@ interface HandlerAction {
 
     /**
      * 延迟一段时间执行
+     *
      * @param delayMillis 单位毫秒
      */
     fun postDelayed(runnable: Runnable, delayMillis: Long): Boolean {
@@ -33,6 +34,7 @@ interface HandlerAction {
 
     /**
      * 在指定的时间执行
+     *
      * @param uptimeMillis 时间戳
      */
     fun postAtTime(runnable: Runnable, uptimeMillis: Long): Boolean {

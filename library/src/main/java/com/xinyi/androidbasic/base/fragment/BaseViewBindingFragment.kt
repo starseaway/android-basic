@@ -1,6 +1,5 @@
 package com.xinyi.androidbasic.base.fragment
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,15 +24,11 @@ abstract class BaseViewBindingFragment<VB : ViewBinding> : BaseFragment() {
      */
     val binding: VB get() = varBinding
 
-    override fun setContentView(inflater: LayoutInflater, container: ViewGroup?): View {
+    override fun bindContentView(inflater: LayoutInflater, container: ViewGroup?): View {
         varBinding = inflateBinding(inflater, container)
         onBindingCreated(varBinding)
-        return varBinding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initObserveUI()
-        super.onViewCreated(view, savedInstanceState)
+        return varBinding.root
     }
 
     /**
@@ -53,7 +48,7 @@ abstract class BaseViewBindingFragment<VB : ViewBinding> : BaseFragment() {
     protected open fun onBindingCreated(binding: VB) { }
 
     /**
-     * 初始化UI观察
+     * 初始化 UI 观察
      */
     open fun initObserveUI() { }
 }

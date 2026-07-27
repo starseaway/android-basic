@@ -5,8 +5,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import com.xinyi.androidbasic.R
+import com.xinyi.androidbasic.action.BundleAction
+import com.xinyi.androidbasic.action.ClickAction
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
@@ -16,7 +19,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/9/30 15:43
  */
-abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHandlerProxy {
+abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHandlerProxy, BundleAction, ClickAction {
 
     /**
      * 线程处理器
@@ -25,9 +28,7 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 设置弹窗样式
-        setStyle(STYLE_NO_TITLE, setDialogStyleTheme())
-        // 初始化Handler
+
         if (mThreadHandler == null) {
             mThreadHandler = ThreadHandler.createHandler(this, this.javaClass.simpleName)
         }
@@ -37,42 +38,73 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
         return mThreadHandler
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mThreadHandler?.quitSafely()
-        mThreadHandler = null
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(initLayoutId(), container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return bindContentView(inflater, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dealIntent()
+        initWindow()
+
         initViews(view)
         initParams(savedInstanceState)
         initListeners()
     }
 
     /**
-     * 初始化布局文件
+     * 初始化窗口属性
+     */
+    protected fun initWindow() {
+        // 设置弹窗样式
+        setStyle(STYLE_NO_TITLE, setDialogStyleTheme())
+
+        setBackgroundDrawableResource(R.color.transparent)
+        setGravity()
+
+        setCanceledOnTouchOutside(canceledOnTouchOutside())
+        setCancelable(cancelable())
+    }
+
+    /**
+     * 设置内容视图
+     *
+     * @param inflater 布局加载器
+     * @param container 容器
+     */
+    protected open fun bindContentView(inflater: LayoutInflater, container: ViewGroup?): View {
+        return inflater.inflate(initLayoutId(), container, false)
+    }
+
+    /**
+     * 初始化布局 ID
      */
     protected abstract fun initLayoutId(): Int
 
     /**
-     * 获取弹窗视图宽度
+     * 初始化视图
      */
-    abstract fun getWindowWidth(): Int
+    protected open fun initViews(view: View) {}
 
     /**
-     * 获取弹窗视图高度
+     * 初始化参数
      */
-    abstract fun getWindowHeight(): Int
+    protected open fun initParams(savedInstanceState: Bundle?) { }
+
+    /**
+     * 初始化监听器
+     */
+    protected open fun initListeners() { }
+
+    /**
+     * 处理消息
+     */
+    override fun handleMessage(msg: Message): Boolean {
+        return false
+    }
+
+    override fun getBundle(): Bundle? {
+        return arguments
+    }
 
     /**
      * 设置弹窗样式
@@ -85,56 +117,56 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
     protected open fun canceledOnTouchOutside(): Boolean = true
 
     /**
+     * 设置弹窗背景
+     *
+     * @param resId 资源 ID
+     */
+    open fun setBackgroundDrawableResource(resId: Int) {
+        dialog?.window?.setBackgroundDrawableResource(resId)
+    }
+
+    /**
+     * 设置弹窗在外部触摸时是否可以取消
+     *
+     * @param isCanceled 是否可以取消
+     */
+    open fun setCanceledOnTouchOutside(isCanceled: Boolean) {
+        dialog?.setCanceledOnTouchOutside(isCanceled)
+    }
+
+    /**
+     * 设置 Dialog 重心
+     */
+    open fun setGravity(gravity: Int = Gravity.CENTER) {
+        dialog?.window?.setGravity(gravity)
+    }
+
+    /**
      * 设置弹窗是否可以通过物理返回键取消
      */
     protected open fun cancelable(): Boolean = true
 
     /**
-     * 初始化视图
+     * 设置 Dialog 宽度 (WRAP_CONTENT / MATCH_PARENT)
      */
-    protected open fun initViews(view: View) {}
-
-    /**
-     * 初始化参数
-     */
-    protected open fun initParams(savedInstanceState: Bundle?) {
-        dialog?.apply {
-            // 设置弹窗在外部触摸时是否可以取消
-            // 如果返回 true，用户点击弹窗外部时会关闭弹窗
-            setCanceledOnTouchOutside(canceledOnTouchOutside())
-
-            // 设置弹窗是否可以通过物理返回键取消
-            // 如果返回 true，用户按下返回键时会关闭弹窗
-            setCancelable(cancelable())
-
-            //自定义弹窗视图宽高度
-            window?.apply {
-                setBackgroundDrawableResource(R.color.transparent)
-                decorView.setPadding(0, 0, 0, 0)
-                val wlp = attributes.apply {
-                    gravity = Gravity.CENTER
-                    width = getWindowWidth()
-                    height = getWindowHeight()
-                }
-                attributes = wlp
-            }
-        }
+    fun setWidth(width: Int) {
+        val params = dialog?.window?.attributes
+        params?.width = width
+        dialog?.window?.attributes = params
     }
 
     /**
-     * 处理Intent
+     * 设置 Dialog 高度 (WRAP_CONTENT / MATCH_PARENT)
      */
-    protected open fun dealIntent() {}
+    fun setHeight(height: Int) {
+        val params = dialog?.window?.attributes
+        params?.height = height
+        dialog?.window?.attributes = params
+    }
 
-    /**
-     * 初始化监听器
-     */
-    protected open fun initListeners() {}
-
-    /**
-     * 处理消息
-     */
-    override fun handleMessage(msg: Message): Boolean {
-        return false
+    override fun onDestroy() {
+        super.onDestroy()
+        mThreadHandler?.quitSafely()
+        mThreadHandler = null
     }
 }

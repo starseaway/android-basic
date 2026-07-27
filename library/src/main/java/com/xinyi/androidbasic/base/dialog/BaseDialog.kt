@@ -8,6 +8,7 @@ import android.os.Message
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowManager
 import android.view.animation.Animation
 import androidx.annotation.FloatRange
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatDialog
 import com.xinyi.androidbasic.R
 import com.xinyi.androidbasic.action.ActivityAction
 import androidx.core.graphics.drawable.toDrawable
+import com.xinyi.androidbasic.action.ClickAction
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
@@ -45,11 +47,11 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     }
 
     /**
-     * 是否已经设置过 ContentView
+     * 是否已经绑定过 ContentView
      */
-    private var _isContentViewInstalled = false
-    val isContentViewInstalled: Boolean
-        get() = _isContentViewInstalled
+    private var _isContentViewBound = false
+    val isContentViewBound: Boolean
+        get() = _isContentViewBound
 
     /**
      * 构造函数
@@ -62,7 +64,9 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
         context: Context,
         cancelable: Boolean,
         cancelListener: DialogInterface.OnCancelListener
-    ) : super(context, cancelable, cancelListener)
+    ) : super(context, cancelable, cancelListener) {
+        initialize()
+    }
 
     /**
      * 构造函数
@@ -70,14 +74,57 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
      * @param context 上下文
      * @param theme 主题
      */
-    constructor(context: Context, theme: Int) : super(context, theme)
+    constructor(context: Context, theme: Int) : super(context, theme) {
+        initialize()
+    }
 
     /**
      * 构造函数
      *
      * @param context 上下文
      */
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        initialize()
+    }
+
+    /**
+     * 构造初始化
+     */
+    private fun initialize() {
+        if (!isContentViewBound) {
+            bindContentView()
+        }
+        initWindow()
+    }
+
+    /**
+     * 绑定弹窗内容视图
+     */
+    protected open fun bindContentView() {
+        setContentView(initLayoutId())
+    }
+
+    /**
+     * 初始化窗口属性
+     */
+    protected fun initWindow() {
+        // 去除窗口透明部分显示的黑色
+        window?.setBackgroundDrawable(0.toDrawable())
+        setGravity()
+        setCanceledOnTouchOutside(canceled())
+        setCancelable(canceled())
+    }
+
+    /**
+     * 获取 Dialog 的根布局
+     */
+    open fun getContentView(): View? {
+        val contentView: View? = findViewById(Window.ID_ANDROID_CONTENT)
+        if (contentView is ViewGroup && contentView.childCount == 1) {
+            return contentView.getChildAt(0)
+        }
+        return contentView
+    }
 
     /**
      * 线程处理器
@@ -87,17 +134,8 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 去除窗口透明部分显示的黑色
-        window?.setBackgroundDrawable(0.toDrawable())
-
-        setGravity()
-
-        setCanceledOnTouchOutside(canceled())
-        setCancelable(canceled())
-
-        // 防止子类提前调用 setContentView 后重复安装 ContentView
-        if (!isContentViewInstalled) {
-            setDialogContentView()
+        if (mThreadHandler == null) {
+            mThreadHandler = ThreadHandler.createHandler(this, this::class.java.simpleName)
         }
 
         initViews()
@@ -105,26 +143,23 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
         initListeners()
     }
 
-    /**
-     * 设置弹窗的内容视图
-     */
-    protected open fun setDialogContentView() {
-        setContentView(initLayoutId())
+    override fun getThreadHandler(): ThreadHandler? {
+        return mThreadHandler
     }
-
+    
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
-        _isContentViewInstalled = true
+        _isContentViewBound = true
     }
 
     override fun setContentView(view: View) {
         super.setContentView(view)
-        _isContentViewInstalled = true
+        _isContentViewBound = true
     }
 
     override fun setContentView(view: View, params: ViewGroup.LayoutParams?) {
         super.setContentView(view, params)
-        _isContentViewInstalled = true
+        _isContentViewBound = true
     }
 
     /**
@@ -137,17 +172,17 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     /**
      * 初始化组件
      */
-    protected open fun initViews() {}
+    protected open fun initViews() { }
 
     /**
      * 参数设置
      */
-    protected open fun initParams() {}
+    protected open fun initParams() { }
 
     /**
      * 监听设置
      */
-    protected open fun initListeners() {}
+    protected open fun initListeners() { }
 
     /**
      * 是否点击返回已经触摸屏幕空白区域关闭弹窗
@@ -175,7 +210,7 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     }
 
     /**
-     * 设置 Dialog 宽度(WRAP_CONTENT/MATCH_PARENT)
+     * 设置 Dialog 宽度 (WRAP_CONTENT / MATCH_PARENT)
      */
     fun setWidth(width: Int) {
         val params = window?.attributes
@@ -184,12 +219,32 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     }
 
     /**
-     * 设置 Dialog 高度(WRAP_CONTENT/MATCH_PARENT)
+     * 设置 Dialog 高度 (WRAP_CONTENT / MATCH_PARENT)
      */
     fun setHeight(height: Int) {
         val params = window?.attributes
         params?.height = height
         window?.attributes = params
+    }
+
+    /**
+     * 设置水平偏移
+     */
+    open fun setXOffset(offset: Int) {
+        val window: Window = window ?: return
+        val params: WindowManager.LayoutParams? = window.attributes
+        params?.x = offset
+        window.attributes = params
+    }
+
+    /**
+     * 设置垂直偏移
+     */
+    open fun setYOffset(offset: Int) {
+        val window: Window = window ?: return
+        val params: WindowManager.LayoutParams? = window.attributes
+        params?.y = offset
+        window.attributes = params
     }
 
     fun show(x: Int, y: Int) {
@@ -276,21 +331,10 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     fun setBackgroundDimAmount(@FloatRange(from = 0.0, to = 1.0) dimAmount: Float) {
         window?.setDimAmount(dimAmount)
     }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (mThreadHandler == null) {
-            mThreadHandler = ThreadHandler.createHandler(this, this::class.java.simpleName)
-        }
-    }
-
-    override fun getThreadHandler(): ThreadHandler? {
-        return mThreadHandler
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    
+    override fun onStop() {
         mThreadHandler?.quitSafely()
         mThreadHandler = null
+        super.onStop()
     }
 }

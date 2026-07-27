@@ -67,5 +67,5 @@
     <color name="orange">#FFFFA500</color>
 
     <!-- 水波纹按压颜色 多用于条目-->
-    <color name="common_button_ripple_pressed_color">#FFE5E5E5</color>
+    <color name="ripple_pressed_color">#FFE5E5E5</color>
 </resources>

@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.annotation.CallSuper
 import com.xinyi.androidbasic.action.ActivityAction
+import com.xinyi.androidbasic.action.ClickAction
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
@@ -18,7 +19,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/10/8 9:03
  */
-abstract class BaseFrameLayout : FrameLayout, Handler.Callback, ActivityAction, ThreadHandlerProxy {
+abstract class BaseFrameLayout : FrameLayout, Handler.Callback, ActivityAction, ThreadHandlerProxy, ClickAction {
 
     /**
      * 是否已完成初始化
@@ -99,22 +100,22 @@ abstract class BaseFrameLayout : FrameLayout, Handler.Callback, ActivityAction, 
     protected abstract fun initLayoutId(): Int
 
     /**
-     * 初始化组件
+     * 初始化 Views
      */
-    protected open fun initViews() {}
+    protected open fun initViews() { }
 
     /**
-     * 参数设置
+     * 初始化参数设置
      */
-    protected open fun initParams() {}
+    protected open fun initParams() { }
 
     /**
-     * 监听设置
+     * 初始化监听设置
      */
-    protected open fun initListeners() {}
+    protected open fun initListeners() { }
 
     /**
-     * 初始化 UI 观察
+     * 视图被恢复时调用
      */
     @CallSuper
     protected open fun onResume() {
@@ -122,7 +123,7 @@ abstract class BaseFrameLayout : FrameLayout, Handler.Callback, ActivityAction, 
     }
 
     /**
-     * 视图暂停时调用
+     * 视图被暂停时调用
      */
     @CallSuper
     protected open fun onPause() {
@@ -130,7 +131,7 @@ abstract class BaseFrameLayout : FrameLayout, Handler.Callback, ActivityAction, 
     }
 
     /**
-     * 视图销毁时调用
+     * 视图被销毁时调用
      */
     protected open fun onDestroy() {}
 

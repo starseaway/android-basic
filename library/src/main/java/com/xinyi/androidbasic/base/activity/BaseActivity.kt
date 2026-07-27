@@ -33,12 +33,13 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
     private var mThreadHandler: ThreadHandler? = null
 
     /**
-     * HandlerCallback 对象，用于处理接收到的消息
+     * Handler 消息回调实现类
      */
     private var mHandlerCallback: HandlerCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         mHandlerCallback = HandlerCallback(this)
         mThreadHandler = ThreadHandler.createHandler(mHandlerCallback, MessagePrinter(), this::class.java.simpleName)
 
@@ -75,29 +76,35 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
     }
 
     /**
-     * 初始化布局文件
+     * 初始化布局 ID
      */
     protected abstract fun initLayoutId(): Int
 
     /**
-     * 处理 Intent
+     * 处理 Activity 启动参数
+     *
+     * 可通过 [BundleAction] 提供的能力读取 Intent 携带的数据。
+     *
+     * @param intent 启动参数
      */
-    protected open fun dealIntent(mIntent: Intent?) {}
+    protected open fun dealIntent(intent: Intent) { }
 
     /**
-     * 初始化视图
+     * 初始化 Views
      */
-    protected open fun initViews() {}
+    protected open fun initViews() { }
 
     /**
-     * 初始化参数
+     * 初始化参数设置
+     * 
+     * @param savedInstanceState 保存的实例状态
      */
-    protected open fun initParams(savedInstanceState: Bundle?) {}
+    protected open fun initParams(savedInstanceState: Bundle?) { }
 
     /**
-     * 初始化监听器
+     * 初始化监听设置
      */
-    protected open fun initListeners() {}
+    protected open fun initListeners() { }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         KeyboardTouchHelper.onDispatchTouch(this, ev, enableHideKeyboardOnTouch())
@@ -143,7 +150,7 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
          * @return 如果消息已处理则返回 true，如果消息未处理则返回 false
          */
         override fun handleMessage(msg: Message): Boolean {
-            LogUtil.i("Handler消息：$msg")
+            LogUtil.i("Handler 消息：$msg")
             mWeakThreadHandler.get()?.handleMessage(msg)
             return false
         }

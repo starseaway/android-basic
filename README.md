@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-1.9.1-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -30,8 +30,6 @@
 
 ## 二、SDK 适用范围
 
-## 二、SDK 适用范围
-
 | 项目         | 要求                 |
 |------------|--------------------|
 | Min SDK    | 19（Android 4.4）及以上 |
@@ -52,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:1.9.1'
+implementation 'com.github.starseaway:android-basic:2.0.0'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:1.9.1")
+implementation("com.github.starseaway:android-basic:2.0.0")
 ```
 
 ### 3. 初始化模块
@@ -268,6 +266,14 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V2.0.0 (2026-07-27)
+- 🦄 refactor: 重构 `BaseDialog` 生命周期。构造阶段完成 `bindContentView` / `initWindow`；`onCreate` 创建 ThreadHandler 并执行 `initViews` / `initParams` / `initListeners`；`onStop` 释放 ThreadHandler。
+- 🦄 refactor: `BaseViewBindingDialog` 改为重写 `bindContentView()` 完成 inflate，不再依赖 `init { }`。
+- 🦄 refactor: 重构 `BaseDialogFragment` 窗口与初始化流程，统一 `bindContentView` / `initWindow`；窗口宽高改为 `setWidth` / `setHeight`，移除 `getWindowWidth` / `getWindowHeight` / `dealIntent`。
+- 🦄 refactor: `BaseFragment` / `BaseDialogFragment` / 各 Layout / Popup 等基类统一接入 `ClickAction`、`BundleAction`（按组件能力）。
+- 🦄 refactor: 重构 `BaseViewBindingPopupWindow` 构造初始化链（`bindContentView` / `initWindow`），窗口默认行为从 `initParams` 前移。
+- 💥 breaking: 升级到 2.0.0，上述 API 更名与生命周期调整不向下兼容。
 
 ### V1.9.1 (2026-07-08)
 - ✨ feat: 新增 `KeyboardTouchHelper`，支持点击输入框外隐藏软键盘。

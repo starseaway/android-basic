@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.widget.RelativeLayout
 import androidx.annotation.CallSuper
 import com.xinyi.androidbasic.action.ActivityAction
+import com.xinyi.androidbasic.action.ClickAction
 import com.xinyi.beehive.core.ThreadHandler
 import com.xinyi.beehive.proxy.ThreadHandlerProxy
 
@@ -18,7 +19,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/10/8 9:17
  */
-abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAction, ThreadHandlerProxy {
+abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAction, ThreadHandlerProxy, ClickAction {
 
     /**
      * 是否已完成初始化
@@ -34,11 +35,6 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
      * 是否处于 Resume 状态
      */
     private var isResume: Boolean = false
-
-    /**
-     * 属性集
-     */
-    private var attributeSet: AttributeSet? = null
 
     /**
      * 构造方法
@@ -103,23 +99,24 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
      */
     protected abstract fun initLayoutId(): Int
 
-    /**
-     * 初始化组件
-     */
-    protected open fun initViews() {}
 
     /**
-     * 参数设置
+     * 初始化 Views
      */
-    protected open fun initParams() {}
+    protected open fun initViews() { }
 
     /**
-     * 监听设置
+     * 初始化参数设置
      */
-    protected open fun initListeners() {}
+    protected open fun initParams() { }
 
     /**
-     * 初始化 UI 观察
+     * 初始化监听设置
+     */
+    protected open fun initListeners() { }
+
+    /**
+     * 视图被恢复时调用
      */
     @CallSuper
     protected open fun onResume() {
@@ -127,7 +124,7 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
     }
 
     /**
-     * 视图暂停时调用
+     * 视图被暂停时调用
      */
     @CallSuper
     protected open fun onPause() {
@@ -135,9 +132,9 @@ abstract class BaseRelativeLayout : RelativeLayout, Handler.Callback, ActivityAc
     }
 
     /**
-     * 视图销毁时调用
+     * 视图被销毁时调用
      */
-    protected open fun onDestroy() {}
+    protected open fun onDestroy() { }
 
     /**
      * 是否处于 Resume 状态

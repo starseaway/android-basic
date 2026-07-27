@@ -27,14 +27,14 @@ abstract class BaseViewBindingDialog<VB : ViewBinding> : BaseDialog {
     /**
      * 可变 binding
      */
-    protected var varBinding: VB
+    protected lateinit var varBinding: VB
 
     /**
      * 获取 ViewBinding 对象
      */
     val binding: VB get() = varBinding
 
-    init {
+    override fun bindContentView() {
         varBinding = inflateBinding(LayoutInflater.from(context))
         setContentView(varBinding.root)
         onBindingCreated(varBinding)

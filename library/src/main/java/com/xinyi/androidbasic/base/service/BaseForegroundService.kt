@@ -48,7 +48,7 @@ abstract class BaseForegroundService : BaseService() {
     /**
      * 更新通知内容
      *
-     * ⚠️ 注意：调用时请确保线程安全，避免阻塞主线程。
+     * 注意：调用时请确保线程安全，避免阻塞主线程。
      *
      * @param notification 新的通知对象
      */

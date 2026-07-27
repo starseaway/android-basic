@@ -32,7 +32,7 @@ abstract class BaseService : Service(), ThreadHandlerProxy, Handler.Callback {
     /**
      * 初始化参数
      */
-    protected open fun initParams() {}
+    protected open fun initParams() { }
 
     override fun getThreadHandler(): ThreadHandler? {
         return mThreadHandler

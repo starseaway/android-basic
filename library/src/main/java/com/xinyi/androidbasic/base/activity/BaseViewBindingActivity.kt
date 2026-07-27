@@ -46,7 +46,7 @@ abstract class BaseViewBindingActivity<VB : ViewBinding> : BaseResultActivity() 
     protected open fun onBindingCreated(binding: VB) { }
 
     /**
-     * 初始化UI观察
+     * 初始化 UI 观察
      */
     open fun initObserveUI() { }
 }

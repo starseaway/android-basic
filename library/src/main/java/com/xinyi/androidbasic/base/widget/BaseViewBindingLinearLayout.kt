@@ -48,5 +48,5 @@ abstract class BaseViewBindingLinearLayout<VB : ViewBinding> : BaseLinearLayout 
     /**
      * Binding 创建完成后的回调
      */
-    protected open fun onBindingCreated(binding: VB) {}
+    protected open fun onBindingCreated(binding: VB) { }
 }

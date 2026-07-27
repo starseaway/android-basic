@@ -25,8 +25,6 @@ abstract class BaseRepository {
     /**
      * 标准接口调用封装（适用于返回 [ResponseData] 的接口）
      *
-     * 函数会将接口响应转换为 [Resource]，可根据业务字段判断成功或失败
-     *
      * @param T 数据实体类型
      * @param apiCall 挂起函数，返回统一响应结构 [ResponseData]
      *
@@ -49,8 +47,6 @@ abstract class BaseRepository {
 
     /**
      * 通用数据调用封装（适用于非统一响应体的场景）
-     *
-     * 函数会将返回结果转换为 [Resource]，通过判空决定成功或失败
      *
      * @param T 数据类型
      * @param apiCall 挂起函数，返回可空数据（T?）

@@ -48,5 +48,5 @@ abstract class BaseViewBindingConstraintLayout<VB : ViewBinding> : BaseConstrain
     /**
      * Binding 创建完成后的回调
      */
-    protected open fun onBindingCreated(binding: VB) {}
+    protected open fun onBindingCreated(binding: VB) { }
 }
