@@ -37,7 +37,7 @@ interface ClickAction : View.OnClickListener {
      */
     fun setOnClickListener(listener: View.OnClickListener?, vararg ids: Int) {
         for (id in ids) {
-            findViewById<View>(id)?.setOnClickListener(listener)
+            findViewById<View>(id).setOnClickListener(listener)
         }
     }
 

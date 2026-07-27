@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:color="@color/common_button_ripple_pressed_color"
+    android:color="@color/ripple_pressed_color"
     tools:targetApi="21">
 
     <item android:drawable="@drawable/round_white_shape" />
