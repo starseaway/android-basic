@@ -6,6 +6,7 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import com.xinyi.androidbasic.action.BundleAction
 import com.xinyi.androidbasic.action.ClickAction
@@ -34,6 +35,11 @@ abstract class BaseFragment : Fragment(), ThreadHandlerProxy, BundleAction, Clic
      */
     private var mHandlerCallback: HandlerCallback? = null
 
+    /**
+     * 根布局
+     */
+    private var rootView: View? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,7 +52,8 @@ abstract class BaseFragment : Fragment(), ThreadHandlerProxy, BundleAction, Clic
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return bindContentView(inflater, container)
+        rootView = bindContentView(inflater, container)
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,6 +76,17 @@ abstract class BaseFragment : Fragment(), ThreadHandlerProxy, BundleAction, Clic
      */
     protected open fun bindContentView(inflater: LayoutInflater, container: ViewGroup?): View {
         return inflater.inflate(initLayoutId(), container, false)
+    }
+
+    override fun getView(): View? {
+        return rootView
+    }
+
+    /**
+     * 根据资源 id 获取一个 View 对象
+     */
+    override fun <V : View> findViewById(@IdRes id: Int): V? {
+        return rootView?.findViewById(id)
     }
 
     /**
@@ -135,6 +153,11 @@ abstract class BaseFragment : Fragment(), ThreadHandlerProxy, BundleAction, Clic
      * @param msg 接收到的消息对象
      */
     protected open fun handleMessage(msg: Message?) { }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        rootView = null
+    }
 
     override fun onDestroy() {
         super.onDestroy()

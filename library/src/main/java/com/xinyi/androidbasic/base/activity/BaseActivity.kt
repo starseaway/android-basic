@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Message
 import android.util.Printer
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
@@ -73,6 +74,10 @@ abstract class BaseActivity : AppCompatActivity(), ThreadHandlerProxy, KeyboardA
      */
     fun getContentView(): ViewGroup {
         return findViewById(Window.ID_ANDROID_CONTENT)
+    }
+
+    override fun <T : View> findViewById(id: Int): T {
+        return super.findViewById(id)
     }
 
     /**

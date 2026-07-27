@@ -26,6 +26,11 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
      */
     private var mThreadHandler: ThreadHandler? = null
 
+    /**
+     * 根布局
+     */
+    private var rootView: View? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,7 +44,8 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return bindContentView(inflater, container)
+        rootView = bindContentView(inflater, container)
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,6 +79,14 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
      */
     protected open fun bindContentView(inflater: LayoutInflater, container: ViewGroup?): View {
         return inflater.inflate(initLayoutId(), container, false)
+    }
+
+    override fun getView(): View? {
+        return rootView
+    }
+
+    override fun <V : View> findViewById(id: Int): V? {
+        return rootView?.findViewById(id)
     }
 
     /**
@@ -162,6 +176,11 @@ abstract class BaseDialogFragment : DialogFragment(), Handler.Callback, ThreadHa
         val params = dialog?.window?.attributes
         params?.height = height
         dialog?.window?.attributes = params
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        rootView = null
     }
 
     override fun onDestroy() {

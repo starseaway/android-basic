@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.1-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.0.0'
+implementation 'com.github.starseaway:android-basic:2.0.1'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.0.0")
+implementation("com.github.starseaway:android-basic:2.0.1")
 ```
 
 ### 3. 初始化模块
@@ -266,6 +266,12 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ---
 
 ## 六、版本变更记录
+
+### V2.0.1 (2026-07-27)
+- 🐞 fix: `ClickAction.findViewById` 返回类型改为可空，`setOnClickListener` 增加空安全调用。
+- 🐞 fix: `BaseFragment` / `BaseDialogFragment` 缓存根布局并实现 `findViewById` / `getView`，修复接入 `ClickAction` 后无法按 id 查找子 View 的问题；`onDestroyView` 释放根布局引用。
+- ✨ feat: `BaseDialog` 接入 `ClickAction`，并显式转发 `findViewById`。
+- ✨ feat: `BaseActivity` 显式转发 `findViewById`，与 `ClickAction` 能力对齐。
 
 ### V2.0.0 (2026-07-27)
 - 🦄 refactor: 重构 `BaseDialog` 生命周期。构造阶段完成 `bindContentView` / `initWindow`；`onCreate` 创建 ThreadHandler 并执行 `initViews` / `initParams` / `initListeners`；`onStop` 释放 ThreadHandler。

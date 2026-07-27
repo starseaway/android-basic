@@ -18,7 +18,7 @@ interface ClickAction : View.OnClickListener {
      *
      * @param id View 的资源 ID
      */
-    fun <V : View> findViewById(@IdRes id: Int): V
+    fun <V : View> findViewById(@IdRes id: Int): V?
 
     /**
      * 为多个 View ID 设置点击事件监听器（默认为当前对象）
@@ -37,7 +37,7 @@ interface ClickAction : View.OnClickListener {
      */
     fun setOnClickListener(listener: View.OnClickListener?, vararg ids: Int) {
         for (id in ids) {
-            findViewById<View>(id).setOnClickListener(listener)
+            findViewById<View>(id)?.setOnClickListener(listener)
         }
     }
 

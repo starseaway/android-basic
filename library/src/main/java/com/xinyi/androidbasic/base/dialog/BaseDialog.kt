@@ -27,7 +27,7 @@ import com.xinyi.beehive.proxy.ThreadHandlerProxy
  * @author 新一
  * @date 2024/9/30 16:20
  */
-abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProxy, ActivityAction {
+abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProxy, ActivityAction, ClickAction {
 
     companion object {
         /** 没有动画效果  */
@@ -102,6 +102,10 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
      */
     protected open fun bindContentView() {
         setContentView(initLayoutId())
+    }
+
+    override fun <T : View> findViewById(id: Int): T? {
+        return super.findViewById(id)
     }
 
     /**
