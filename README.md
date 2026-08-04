@@ -267,26 +267,25 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### V2.0.1 (2026-07-27)
-- 🐞 fix: `ClickAction.findViewById` 返回类型改为可空，`setOnClickListener` 增加空安全调用。
-- 🐞 fix: `BaseFragment` / `BaseDialogFragment` 缓存根布局并实现 `findViewById` / `getView`，修复接入 `ClickAction` 后无法按 id 查找子 View 的问题；`onDestroyView` 释放根布局引用。
-- ✨ feat: `BaseDialog` 接入 `ClickAction`，并显式转发 `findViewById`。
-- ✨ feat: `BaseActivity` 显式转发 `findViewById`，与 `ClickAction` 能力对齐。
+### V V2.0.2 (2026-08-04)
+- 🐞 fix: 纯 ViewBinding 工程不再因 DataBinding 回退路径崩溃。
+- 🦄 refactor: 优化绑定类反射加载，失败信息更可追踪。
 
-### V2.0.0 (2026-07-27)
-- 🦄 refactor: 重构 `BaseDialog` 生命周期。构造阶段完成 `bindContentView` / `initWindow`；`onCreate` 创建 ThreadHandler 并执行 `initViews` / `initParams` / `initListeners`；`onStop` 释放 ThreadHandler。
-- 🦄 refactor: `BaseViewBindingDialog` 改为重写 `bindContentView()` 完成 inflate，不再依赖 `init { }`。
-- 🦄 refactor: 重构 `BaseDialogFragment` 窗口与初始化流程，统一 `bindContentView` / `initWindow`；窗口宽高改为 `setWidth` / `setHeight`，移除 `getWindowWidth` / `getWindowHeight` / `dealIntent`。
-- 🦄 refactor: `BaseFragment` / `BaseDialogFragment` / 各 Layout / Popup 等基类统一接入 `ClickAction`、`BundleAction`（按组件能力）。
-- 🦄 refactor: 重构 `BaseViewBindingPopupWindow` 构造初始化链（`bindContentView` / `initWindow`），窗口默认行为从 `initParams` 前移。
-- 💥 breaking: 升级到 2.0.0，上述 API 更名与生命周期调整不向下兼容。
+### V V2.0.1 (2026-07-27)
+- 🐞 fix: 完善点击能力与空安全处理。
+- 🐞 fix: 修复 Fragment 场景下按 id 查找子 View 异常。
+- ✨ feat: Dialog / Activity 对齐点击能力接入。
 
-### V1.9.1 (2026-07-08)
-- ✨ feat: 新增 `KeyboardTouchHelper`，支持点击输入框外隐藏软键盘。
-- 🦄 refactor: `BaseActivity` 改为在 `dispatchTouchEvent` 中统一处理键盘收起；
-子类可通过 `enableHideKeyboardOnTouch()` 关闭；移除 `initSoftKeyboard()` 及根布局点击方案。
-- 🚀 perf: `FragmentSwitchHelper.initialize()` 首屏使用 `commitNow()` 同步提交；Tab 切换仍保持 `commit()` 异步。
-- 🧹 remove: `BaseAdapter` 移除默认水波纹背景 `setRippleBackground()`，条目点击效果由业务层按需设置。
+### V V2.0.0 (2026-07-27)
+- 🦄 refactor: 统一 Dialog、Fragment、Popup 等基类生命周期与初始化流程。
+- 🦄 refactor: 基类能力接口接入方式标准化。
+- 💥 breaking: 2.0.0 API 调整，不向下兼容。
+
+### V V1.9.1 (2026-07-08)
+- ✨ feat: 支持点击输入框外收起软键盘。
+- 🦄 refactor: Activity 统一处理触控收起键盘。
+- 🚀 perf: 优化 Fragment 首屏切换效率。
+- 🧹 remove: 适配器不再默认设置水波纹背景。
 
 ### V1.9.0 (2026-07-07)
 - 🦄 refactor: 将各个组件的 ViewBinding 层绑定基类的泛型约束改为 `VB : ViewBinding`，同时向下兼容 DataBinding。
