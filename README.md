@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.0.2-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.0.1'
+implementation 'com.github.starseaway:android-basic:2.0.2'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.0.1")
+implementation("com.github.starseaway:android-basic:2.0.2")
 ```
 
 ### 3. 初始化模块
