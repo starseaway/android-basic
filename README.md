@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.0.2-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.0.2'
+implementation 'com.github.starseaway:android-basic:2.1.0'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.0.2")
+implementation("com.github.starseaway:android-basic:2.1.0")
 ```
 
 ### 3. 初始化模块
@@ -267,7 +267,10 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
 ## 六、版本变更记录
 
-### V V2.0.2 (2026-08-04)
+### V2.1.0 (2026-08-06)
+- 📦 deps: 升级 TaskBeehive 依赖版本至 V2.1.0
+
+### V2.0.2 (2026-08-04)
 - 🐞 fix: 纯 ViewBinding 工程不再因 DataBinding 回退路径崩溃。
 - 🦄 refactor: 优化绑定类反射加载，失败信息更可追踪。
 
