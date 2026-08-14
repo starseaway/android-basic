@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.2.0-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -24,7 +24,7 @@
 - 全局 Activity 栈管理
 - 常用能力接口化（Action）
 - 一些常用的 Kotlin 扩展函数，日常开发更轻松
-- 内置一套实用的 RecyclerView 适配器，支持多布局 / 多类型
+- 内置一套实用的 RecyclerView 适配器，支持多布局 / 多类型 / payload 局部刷新
 
 --- 
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.1.0'
+implementation 'com.github.starseaway:android-basic:2.2.0'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.1.0")
+implementation("com.github.starseaway:android-basic:2.2.0")
 ```
 
 ### 3. 初始化模块
@@ -262,10 +262,58 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 ```
 
 > 相比传统 Adapter 写法，这些就已经大幅减少模板代码
+
+### 4. payload 局部刷新
+
+`notifyItemChanged(position, payload)` 时，框架会走局部绑定，而不是一律整项重绑：
+
+| 基类                       | 重写点                                                           |
+|--------------------------|---------------------------------------------------------------|
+| `BaseAdapter`            | `onBindViewPayload(holder, item, position, payloads)`         |
+| `BaseViewBindingAdapter` | `onBindViewPayloadBinding(binding, item, position, payloads)` |
+
+- `payloads` 为空：仍走完整绑定（点击监听 + 数据绑定）
+- `payloads` 非空：优先走上述局部绑定；子类未处理时默认回退完整绑定
+- 适用场景：只更新勾选态、角标等，避免重设背景打断条目水波纹
+
+```kotlin
+class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, ItemBinding>(context) {
+
+    companion object {
+        private const val PAYLOAD_SELECTION = "selection"
+    }
+
+    fun setSelected(position: Int) {
+        // ... 更新数据后
+        notifyItemChanged(position, PAYLOAD_SELECTION)
+    }
+
+    override fun onBindViewDataBinding(binding: ItemBinding, item: SelectItem, position: Int) {
+        // 完整绑定：文案、背景、勾选等
+        binding.tvTitle.text = item.title
+        binding.cbSelect.isChecked = item.isSelected
+    }
+
+    override fun onBindViewPayloadBinding(binding: ItemBinding, item: SelectItem, position: Int, payloads: List<Any?>) {
+        if (payloads.contains(PAYLOAD_SELECTION)) {
+            // 只刷勾选，不动 ripple 背景
+            binding.cbSelect.isChecked = item.isSelected
+            return
+        }
+        super.onBindViewPayloadBinding(binding, item, position, payloads)
+    }
+}
+```
+
+> 也可直接重写 `onBindViewHolder(holder, position, payloads)`；有 payload 时自行处理后不要再 `super` 到完整绑定。
  
 ---
 
 ## 六、版本变更记录
+
+### V2.2.0 (2026-08-14)
+- ✨ feat: `BaseAdapter` / `BaseViewBindingAdapter` 支持 payload 局部刷新（`onBindViewPayload` / `onBindViewPayloadBinding`）
+- 🐞 fix: 修复 `notifyItemChanged(position, payload)` 仍走完整绑定、导致条目水波纹被打断的问题
 
 ### V2.1.0 (2026-08-06)
 - 📦 deps: 升级 TaskBeehive 依赖版本至 V2.1.0

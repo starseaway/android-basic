@@ -6,9 +6,7 @@ import androidx.viewbinding.ViewBinding
 import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
 
 /**
- * 单布局的 ViewBindingViewHolder 的适配器基类，用于提升适配器的复用性和开发效率。
- *
- * 子类仅需重写 [initLayoutId] 方法，和 [onBindViewData] 或 [onBindViewDataBinding] 方法，实现数据绑定逻辑，无需重复编写样板代码。
+ * 单布局的 ViewBindingViewHolder 的适配器基类
  *
  * @author 新一
  * @date 2025/4/21 9:22
@@ -56,13 +54,29 @@ abstract class BaseViewBindingAdapter<M, VB : ViewBinding> : BaseAdapter<M, View
     }
 
     /**
-     * 绑定数据到 ViewHolder 上，用于将指定位置的数据项与其视图进行绑定。
+     * 局部刷新绑定到 ViewBinding
      *
-     * 番外话：想在Adapter中绑定数据就直接这里写，不强制在ViewHolder做，如果ViewHolder封装了绑定方法，也可以调用它自己的onBindViewData。
+     * 默认回退到完整绑定；子类可按 [payloads] 只更新必要控件
+     */
+    override fun onBindViewPayload(holder: ViewBindingViewHolder<VB>, item: M, position: Int, payloads: List<Any?>) {
+        onBindViewPayloadBinding(holder.binding, item, position, payloads)
+    }
+
+    /**
+     * 将指定位置的数据项绑定到 ViewHolder 上
      *
      * @param binding 当前条目的 ViewHolder
      * @param item 当前条目的数据
      * @param position 当前条目的初始 position
      */
     open fun onBindViewDataBinding(binding: VB, item: M, position: Int) {}
+
+    /**
+     * 局部刷新绑定
+     *
+     * 默认回退到 [onBindViewDataBinding]
+     */
+    open fun onBindViewPayloadBinding(binding: VB, item: M, position: Int, payloads: List<Any?>) {
+        onBindViewDataBinding(binding, item, position)
+    }
 }

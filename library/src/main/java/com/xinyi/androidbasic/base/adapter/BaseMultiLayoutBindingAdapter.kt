@@ -9,7 +9,6 @@ import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
 
 /**
  * 支持给 RecyclerViewHolder 提供多种布局的 RecyclerView 适配器基类
- * 本类将关注布局的创建和 ViewBinding 的绑定，适配器的复用性和开发效率大大提高
  *
  * 该类基于 viewType 机制，为不同类型的数据项提供灵活的布局支持
  * 子类只需实现对应的 viewType 和布局 ID 映射，即可轻松实现多条目展示

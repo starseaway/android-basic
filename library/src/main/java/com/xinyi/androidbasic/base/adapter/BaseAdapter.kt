@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.DiffUtil
@@ -85,8 +84,25 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
      */
     protected abstract fun onCreateView(parent: ViewGroup, viewType: Int): VH
 
-    @CallSuper
     override fun onBindViewHolder(holder: VH, position: Int, payloads: List<Any?>) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+            return
+        }
+        onBindViewPayload(holder, getItem(position), position, payloads)
+    }
+
+    /**
+     * 局部刷新绑定
+     *
+     * 默认回退到完整绑定；子类可按 [payloads] 只更新必要控件。
+     *
+     * @param holder 当前条目 ViewHolder
+     * @param item 当前条目数据
+     * @param position 当前条目位置
+     * @param payloads 非空局部变化标识
+     */
+    protected open fun onBindViewPayload(holder: VH, item: M, position: Int, payloads: List<Any?>) {
         onBindViewHolder(holder, position)
     }
 
@@ -122,9 +138,9 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
      */
     open fun bindItemClick(holder: VH, listener: OnItemClickListener) {
         holder.itemView.setOnClickListener {
-            val safePosition = getSafeAdapterPosition(holder)
-            if (safePosition != null) {
-                listener.onItemClick(mRecyclerView, holder.itemView, safePosition)
+            val position = getSafeAdapterPosition(holder)
+            if (position != null) {
+                listener.onItemClick(mRecyclerView, holder.itemView, position)
             }
         }
     }
@@ -136,9 +152,9 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
      */
     open fun bindItemLongClick(holder: VH, listener: OnItemLongClickListener) {
         holder.itemView.setOnLongClickListener {
-            val safePosition = getSafeAdapterPosition(holder)
-            if (safePosition != null) {
-                listener.onItemLongClick(mRecyclerView, holder.itemView, safePosition)
+            val position = getSafeAdapterPosition(holder)
+            if (position != null) {
+                listener.onItemLongClick(mRecyclerView, holder.itemView, position)
             }
             false
         }
@@ -156,9 +172,9 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
             value?.let {
                 val childView = holder.itemView.findViewById<View>(key)
                 childView?.setOnClickListener { view ->
-                    val safePosition = getSafeAdapterPosition(holder)
-                    if (safePosition != null) {
-                        value.onChildClick(mRecyclerView, view, safePosition)
+                    val position = getSafeAdapterPosition(holder)
+                    if (position != null) {
+                        value.onChildClick(mRecyclerView, view, position)
                     }
                 }
             }
@@ -188,19 +204,15 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * 获取当前 ViewHolder 的有效位置，如果无效则返回 null。
+     * 获取当前 ViewHolder 的有效位置，无效时返回 null
      *
-     * ⚠️ 使用 adapterPosition 获取的是 **当前 ViewHolder 对应的数据在 Adapter 中的位置**。
+     * adapterPosition 表示 ViewHolder 在 Adapter 中的当前位置。
      *
-     * ✅ 它在大多数场景中都够用，但需要注意：
-     *    - 如果在 RecyclerView 触发 notify 系列方法后立刻访问，它可能暂时返回 RecyclerView.NO_POSITION（-1）。
-     *    - 对于使用 ConcatAdapter 或 PagingAdapter 的情况，它可能不反映在总 Adapter 中的位置。
+     * 注意：
+     * - notify 系列方法调用后，位置可能暂时为 [RecyclerView.NO_POSITION]。
+     * - 使用 ConcatAdapter 或 PagingAdapter 时，不一定是总 Adapter 中的位置。
      *
-     * 👉 若使用的是 RecyclerView 1.2.0 及以上，可以使用 bindingAdapterPosition：
-     *    - bindingAdapterPosition 能正确反映 **当前 ViewHolder 在绑定时在 Adapter 中的位置**。
-     *    - 它更安全，避免某些异步场景中 adapterPosition 不准确的情况。
-     *
-     * 可根据项目依赖，重写getSafeAdapterPosition方法，升级到 bindingAdapterPosition。
+     * RecyclerView 1.2.0+ 可改用 bindingAdapterPosition 获取 ViewHolder 在其绑定 Adapter 中的当前位置。
      */
     open fun getSafeAdapterPosition(holder: VH): Int? {
         val pos = holder.adapterPosition
@@ -216,9 +228,7 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
      * 此方法在每次绑定条目视图时回调，子类应实现具体的数据展示逻辑。
      *
      * 注意：该方法在绑定点击事件之后调用，确保点击行为和数据同步。
-     *
-     * 番外话：想在Adapter中绑定数据就直接这里写，不强制在ViewHolder做，如果ViewHolder封装了绑定方法，也可以调用它自己的onBindViewData。
-     *
+     * 
      * @param holder 当前条目的 ViewHolder
      * @param item 当前条目的数据
      * @param position 当前条目的初始 position（用于首次绑定数据）
@@ -403,10 +413,11 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     /**
      * 统一刷新整个列表
      *
-     * ⚠️ 注意：请勿在首次加载时调用
-     * - 因为这个方法的行为是：刷新已有条目的 UI，但不触发数据集合的变更逻辑，也不会重建 ViewHolder 数量
+     * 仅刷新已有条目 UI，不改变数据集合与 ViewHolder 数量。
+     * 
+     * > 注意：请勿在首次加载时调用，因为此方法是刷新已有条目 UI，不新建 ViewHolder。
      *
-     * @param payload 局部变化标识，为 null 则会 “完整” 更新
+     * @param payload 局部刷新标识，为 null 则完整更新
      */
     open fun notifyItemAllRangeChanged(payload: Any? = null) {
         if (itemCount > 0) {
@@ -415,14 +426,11 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * 使用 DiffUtil 更新列表数据，自动计算差异并刷新 UI，
-     * 它高效地对比旧数据和新数据，仅在数据内容有差异时才更新对应的条目，
-     * 从而避免全量刷新带来的性能浪费和视觉抖动，尤其适合大列表或频繁更新场景。
+     * 使用 DiffUtil 更新列表数据
      *
-     * ⚠️ 模型类需正确实现 equals 方法，以确保差异计算准确。
+     * 模型类需正确实现 equals；无需再手动调用 notify 系列方法。
      *
-     * 注意：DiffUtil 会自动识别增删改的差异，因此无需手动调用 notify 系列方法。
-     * @param newList 新的数据列表，将替换当前列表内容
+     * @param newList 新数据列表
      */
     open fun updateListWithDiff(newList: MutableList<M>) {
         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -462,37 +470,28 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * 由 RecyclerView 在开始观察此 Adapter 时调用。
-     * 请注意，多个 RecyclerView 可能会观察到同一个适配器。
-     *
-     * @param recyclerView 开始观察此适配器的 RecyclerView 实例。
-     * @see onDetachedFromRecyclerView(RecyclerView)
+     * RecyclerView 开始观察此 Adapter
      */
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         mRecyclerView = recyclerView
-        // 判断当前的布局管理器是否为空，如果为空则设置默认的布局管理器
         if (mRecyclerView?.layoutManager == null) {
-            val layoutManager = generateDefaultLayoutManager(mContext)
-            mRecyclerView?.layoutManager = layoutManager
+            mRecyclerView?.layoutManager = createLayoutManager(mContext)
         }
     }
 
     /**
-     * 由 RecyclerView 在停止观察此 Adapter 时调用。
-     *
-     * @param recyclerView 停止观察此适配器的 RecyclerView 实例。
-     * @see onAttachedToRecyclerView(RecyclerView)
+     * RecyclerView 停止观察此 Adapter
      */
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         mRecyclerView = null
     }
 
     /**
-     * 生成默认的布局摆放器，如果需要自定义，重写此方法。
+     * 创建布局管理器
      *
      * @param context 上下文对象
      */
-    open fun generateDefaultLayoutManager(context: Context?): RecyclerView.LayoutManager {
+    open fun createLayoutManager(context: Context?): RecyclerView.LayoutManager {
         return LinearLayoutManager(context)
     }
 
@@ -548,11 +547,11 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
         /**
          * 当 RecyclerView 某个条目被点击时回调
          *
-         * @param recyclerView      RecyclerView 对象
-         * @param itemView          被点击的条目对象
-         * @param safePosition      被点击的条目位置
+         * @param recyclerView RecyclerView 对象
+         * @param itemView 被点击的条目对象
+         * @param position 被点击的条目位置
          */
-        fun onItemClick(recyclerView: RecyclerView?, itemView: View, safePosition: Int)
+        fun onItemClick(recyclerView: RecyclerView?, itemView: View, position: Int)
     }
 
     /**
@@ -563,12 +562,12 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
         /**
          * 当 RecyclerView 某个条目被长按时回调
          *
-         * @param recyclerView      RecyclerView 对象
-         * @param itemView          被点击的条目对象
-         * @param safePosition      被点击的条目位置
-         * @return                  是否拦截事件
+         * @param recyclerView RecyclerView 对象
+         * @param itemView 被点击的条目对象
+         * @param position 被点击的条目位置
+         * @return 是否拦截事件
          */
-        fun onItemLongClick(recyclerView: RecyclerView?, itemView: View, safePosition: Int): Boolean
+        fun onItemLongClick(recyclerView: RecyclerView?, itemView: View, position: Int): Boolean
     }
 
     /**
@@ -579,11 +578,11 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
         /**
          * 当 RecyclerView 某个条目 子 View 被点击时回调
          *
-         * @param recyclerView      RecyclerView 对象
-         * @param childView         被点击的条目子 View
-         * @param safePosition      被点击的条目位置
+         * @param recyclerView RecyclerView 对象
+         * @param childView 被点击的条目子 View
+         * @param position 被点击的条目位置
          */
-        fun onChildClick(recyclerView: RecyclerView?, childView: View, safePosition: Int)
+        fun onChildClick(recyclerView: RecyclerView?, childView: View, position: Int)
     }
 
     /**
@@ -594,10 +593,10 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
         /**
          * 当 RecyclerView 某个条目子 View 被长按时回调
          *
-         * @param recyclerView      RecyclerView 对象
-         * @param childView         被点击的条目子 View
-         * @param safePosition      被点击的条目位置
+         * @param recyclerView RecyclerView 对象
+         * @param childView 被点击的条目子 View
+         * @param position 被点击的条目位置
          */
-        fun onChildLongClick(recyclerView: RecyclerView?, childView: View, safePosition: Int): Boolean
+        fun onChildLongClick(recyclerView: RecyclerView?, childView: View, position: Int): Boolean
     }
 }
