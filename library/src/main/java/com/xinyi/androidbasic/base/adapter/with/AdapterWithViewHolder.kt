@@ -35,16 +35,26 @@ open class RecyclerViewHolder : BaseViewHolder {
 /**
  * 通用的 `ViewBindingViewHolder`
  *
- * @param layoutId 布局资源 ID（R.layout.xxx）
- * @param parent 父布局，用于获取 Context 和作为布局的根容器
- *
  * @author 新一
  * @date 2025/4/21 9:14
  */
-open class ViewBindingViewHolder<VB : ViewBinding>(
-    layoutId: Int,
-    parent: ViewGroup,
-) : BaseViewBindingViewHolder<VB>(layoutId, parent)
+open class ViewBindingViewHolder<VB : ViewBinding> : BaseViewBindingViewHolder<VB> {
+
+    /**
+     * ViewBinding 实例创建 ViewHolder
+     *
+     * @param binding ViewBinding 实例
+     */
+    constructor(binding: VB) : super(binding)
+
+    /**
+     * 布局资源 ID 创建 ViewHolder
+     *
+     * @param layoutId 布局资源 ID（R.layout.xxx）
+     * @param parent 父布局，用于获取 Context 和作为布局的根容器
+     */
+    constructor(layoutId: Int, parent: ViewGroup) : super(layoutId, parent)
+}
 
 /**
  * ViewHolder 的 ViewBinding 基类
