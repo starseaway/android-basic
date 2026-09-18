@@ -286,28 +286,34 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * @param mList 添加一个集合 默认添加到后面
+     * 将集合添加到列表最后面
+     *
+     * @param list 添加的集合
      */
-    fun appendList(mList: MutableList<M>) {
-        appendCollection(mList, false)
+    fun appendList(list: List<M>) {
+        appendCollection(list, false)
     }
 
     /**
-     * @param mList 添加一个集合 默认插入到前面
+     * 将集合添加到列表最前面
+     *
+     * @param list 添加的集合
      */
-    fun appendListByFirstElement(mList: MutableList<M>) {
-        appendCollection(mList, true)
+    fun appendListFirst(list: List<M>) {
+        appendCollection(list, true)
     }
 
     /**
-     * @param mList 添加一个集合
+     * 将集合添加到列表中
+     *
+     * @param list 添加一个集合
      * @param first true：插入最前面，false：添加到后面
      */
-    private fun appendCollection(mList: MutableList<M>, first: Boolean) {
+    private fun appendCollection(list: List<M>, first: Boolean) {
         if (first) {
-            mListBeans.addAll(0, mList)
+            mListBeans.addAll(0, list)
         } else {
-            mListBeans.addAll(mList)
+            mListBeans.addAll(list)
         }
     }
 
@@ -355,7 +361,7 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * 指定`position` 位置插入某条数据，并刷新适配器数据
+     * 在指定位置插入一条数据，并刷新适配器数据
      */
     open fun notifyItemInserted(position: Int, bean: M) {
         mListBeans.add(position, bean)
@@ -363,20 +369,20 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
     }
 
     /**
-     * 插入一个List集合至列表的最前面，并刷新适配器数据
+     * 插入一个 List 集合至列表的最前面，并刷新适配器数据
      */
-    open fun notifyItemInsertedFirst(list: MutableList<M>) {
+    open fun notifyItemRangeInsertedFirst(list: List<M>) {
         if (list.isEmpty()) {
             return
         }
-        appendListByFirstElement(list)
+        appendListFirst(list)
         notifyItemRangeInserted(0, list.size)
     }
 
     /**
-     * 插入一个List集合到最后面，并刷新适配器数据
+     * 插入一个 List 集合到列表最后面，并刷新适配器数据
      */
-    open fun notifyItemInserted(list: MutableList<M>) {
+    open fun notifyItemRangeInserted(list: List<M>) {
         if (list.isEmpty()) {
             return
         }
@@ -432,7 +438,7 @@ abstract class BaseAdapter<M, VH : RecyclerView.ViewHolder> : RecyclerView.Adapt
      *
      * @param newList 新数据列表
      */
-    open fun updateListWithDiff(newList: MutableList<M>) {
+    open fun updateListWithDiff(newList: List<M>) {
         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
 
             override fun getOldListSize(): Int {

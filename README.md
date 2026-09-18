@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.3.0-blue)
+![Version](https://img.shields.io/badge/version-2.3.1-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.3.0'
+implementation 'com.github.starseaway:android-basic:2.3.1'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.3.0")
+implementation("com.github.starseaway:android-basic:2.3.1")
 ```
 
 ### 3. 初始化模块
@@ -310,6 +310,9 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 ---
 
 ## 六、版本变更记录
+
+### V2.3.1 (2026-09-10)
+- 🦄 refactor: 优化 BaseAdapter 数据操作及通知方法命名，统一批量插入语义，提升 API 一致性与易用性。
 
 ### V2.3.0 (2026-09-08)
 - ✨ feat: 扩展 `ViewBindingViewHolder` 的构造函数，支持直接传入 `ViewBinding` 对象，避免反射 inflate。
