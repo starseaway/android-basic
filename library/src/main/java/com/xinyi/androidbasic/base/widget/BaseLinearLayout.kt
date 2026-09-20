@@ -151,17 +151,26 @@ abstract class BaseLinearLayout : LinearLayout, Handler.Callback, ActivityAction
     protected open fun isThreadHandlerEnabled(): Boolean = false
 
     /**
+     * 初始化 ThreadHandler
+     */
+    private fun initThreadHandler() {
+        if (!isThreadHandlerEnabled() || mThreadHandler != null) {
+            return
+        }
+
+        mThreadHandler = ThreadHandler.createHandler(
+            this,
+            this::class.java.simpleName
+        )
+    }
+
+    /**
      * 在视图附加到窗口时调用
      */
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        if (isThreadHandlerEnabled() && mThreadHandler == null) {
-            mThreadHandler = ThreadHandler.createHandler(
-                this,
-                this::class.java.simpleName
-            )
-        }
+        initThreadHandler()
 
         // 执行界面参数初始化
         performInitialize()
@@ -170,6 +179,10 @@ abstract class BaseLinearLayout : LinearLayout, Handler.Callback, ActivityAction
     }
 
     override fun getThreadHandler(): ThreadHandler? {
+        if (!isThreadHandlerEnabled()) {
+            // 使用线程处理器时，必须重写 isThreadHandlerEnabled() 方法返回 true
+            throw IllegalStateException("ThreadHandler is not enabled. Override isThreadHandlerEnabled() to return true.")
+        }
         return mThreadHandler
     }
 
@@ -178,14 +191,17 @@ abstract class BaseLinearLayout : LinearLayout, Handler.Callback, ActivityAction
      */
     override fun onDetachedFromWindow() {
         onPause()
-        super.onDetachedFromWindow()
 
+        // 释放线程处理器
         if (isThreadHandlerEnabled()) {
             mThreadHandler?.quitSafely()
             mThreadHandler = null
         }
 
+        // 执行销毁逻辑
         onDestroy()
+
+        super.onDetachedFromWindow()
     }
 
     /**
