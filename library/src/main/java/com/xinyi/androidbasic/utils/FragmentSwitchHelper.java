@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Fragment 切换工具类，使用 show/hide 方式管理 Fragment 切换
+ * Fragment 切换工具类
+ *
+ * <p> 使用 show/hide 方式管理 Fragment 切换。</p>
  *
  * @author 新一
  * @date 2025/3/12 16:13
@@ -21,6 +23,11 @@ public class FragmentSwitchHelper {
      * 保存选中的 Tab ID 的 Key
      */
     private static final String SELECTED_TAB = "SELECTED_TAB";
+
+    /**
+     * Fragment Tag 前缀
+     */
+    private static final String FRAGMENT_TAG_PREFIX = "FragmentSwitchHelper_";
 
     /**
      * Fragment 管理器
@@ -51,7 +58,7 @@ public class FragmentSwitchHelper {
      * 构造方法
      *
      * @param fragmentManager Fragment 管理器
-     * @param containerId 容器 ID
+     * @param containerId Fragment 容器 ID
      * @param fragmentFactory Fragment 创建工厂
      */
     public FragmentSwitchHelper(FragmentManager fragmentManager, int containerId, FragmentFactory fragmentFactory) {
@@ -61,18 +68,26 @@ public class FragmentSwitchHelper {
     }
 
     /**
-     * 初始化，处理第一次进入时的 Fragment 显示
+     * 初始化 Fragment
      *
-     * @param savedInstanceState 存储上次活动状态的 bundle
+     * <p>
+     *   优先恢复上次选中的 Tab，否则显示指定的默认 Tab。
+     *   初始化时同步提交事务，确保首屏显示时 Fragment 已完成添加。
+     * </p>
+     *
+     * @param savedInstanceState 存储上次活动状态的 Bundle
      * @param defaultTab 默认显示的 Tab
      */
     public void initialize(Bundle savedInstanceState, int defaultTab) {
-        int tab = savedInstanceState == null ? defaultTab : savedInstanceState.getInt(SELECTED_TAB, defaultTab);
+        int tab = savedInstanceState == null
+                ? defaultTab
+                : savedInstanceState.getInt(SELECTED_TAB, defaultTab);
+
         switchFragment(tab, true);
     }
 
     /**
-     * 切换 Fragment
+     * 切换到指定 Fragment
      *
      * @param itemId 被选中的 Tab ID
      */
@@ -81,44 +96,22 @@ public class FragmentSwitchHelper {
     }
 
     /**
-     * 切换 Fragment
+     * 切换到指定 Fragment
      *
      * @param itemId 被选中的 Tab ID
-     * @param commitNow 是否同步提交事务（首屏初始化时使用，避免空容器闪烁）
+     * @param commitNow 是否同步提交事务
      */
     private void switchFragment(int itemId, boolean commitNow) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
 
-        String tag = getFragmentTag(itemId);
-        // 获取当前Fragment
-        Fragment targetFragment = mFragmentCache.get(itemId);
+        Fragment targetFragment = obtainFragment(itemId, transaction);
 
-        // 如果没有缓存Fragment，则创建
-        if (targetFragment == null) {
-            // 从 FragmentManager 中查找是否已存在该 Fragment
-            targetFragment = mFragmentManager.findFragmentByTag(tag);
-            if (targetFragment == null) {
-                // 不存在则创建并添加
-                targetFragment = mFragmentFactory.createFragment(itemId);
-                transaction.add(mContainerId, targetFragment, tag);
-            }
-            // 保存到缓存中
-            mFragmentCache.put(itemId, targetFragment);
-        }
+        hideOtherFragments(transaction, targetFragment);
 
-        // 遍历 FragmentManager 中所有使用了该工具的 Fragment，隐藏非目标 Fragment
-        for (Fragment fragment : mFragmentManager.getFragments()) {
-            if (fragment != null && fragment.getTag() != null && fragment != targetFragment) {
-                transaction.hide(fragment);
-            }
-        }
-
-        // 如果目标Fragment已经添加过，则直接显示它
         if (targetFragment.isAdded()) {
             transaction.show(targetFragment);
         }
 
-        // 更新当前Fragment
         mCurrentFragment = targetFragment;
 
         if (commitNow) {
@@ -129,12 +122,12 @@ public class FragmentSwitchHelper {
     }
 
     /**
-     * 预加载指定的 Fragment
+     * 预加载指定的 Fragment。
      *
      * <p>
-     *   Fragment 会提前创建并加入 FragmentManager，同时保持隐藏状态。
-     *   后续切换时可直接显示，避免首次切换产生创建开销。
-     * <p>
+     *   Fragment 会提前创建并加入 FragmentManager，同时保持隐藏状态，不影响当前显示的 Fragment。
+     *   后续切换时可直接显示，避免首次切换时产生额外的创建开销。
+     * </p>
      *
      * @param itemIds 需要预加载的 Tab ID
      */
@@ -143,24 +136,28 @@ public class FragmentSwitchHelper {
         boolean changed = false;
 
         for (int itemId : itemIds) {
-            String tag = getFragmentTag(itemId);
-
             Fragment fragment = mFragmentCache.get(itemId);
 
             if (fragment == null) {
+                String tag = getFragmentTag(itemId);
                 fragment = mFragmentManager.findFragmentByTag(tag);
 
                 if (fragment == null) {
                     fragment = mFragmentFactory.createFragment(itemId);
                     transaction.add(mContainerId, fragment, tag);
+
+                    // Fragment 尚未真正加入 FragmentManager，
+                    // 但可以在同一事务中直接设置为隐藏状态。
+                    transaction.hide(fragment);
+
+                    changed = true;
+                } else if (!fragment.isHidden()) {
+                    transaction.hide(fragment);
                     changed = true;
                 }
 
                 mFragmentCache.put(itemId, fragment);
-            }
-
-            // 预加载的 Fragment 必须保持隐藏
-            if (fragment.isAdded() && !fragment.isHidden()) {
+            } else if (fragment != mCurrentFragment && fragment.isAdded() && !fragment.isHidden()) {
                 transaction.hide(fragment);
                 changed = true;
             }
@@ -169,6 +166,51 @@ public class FragmentSwitchHelper {
         if (changed) {
             transaction.commit();
         }
+    }
+
+    /**
+     * 获取指定 Tab 对应的 Fragment
+     *
+     * <p>
+     *   优先从缓存获取，其次从 FragmentManager 恢复，
+     *   最后通过工厂创建新的 Fragment。
+     * </p>
+     */
+    private Fragment obtainFragment(int itemId, FragmentTransaction transaction) {
+        Fragment fragment = mFragmentCache.get(itemId);
+
+        if (fragment == null) {
+            String tag = getFragmentTag(itemId);
+            fragment = mFragmentManager.findFragmentByTag(tag);
+
+            if (fragment == null) {
+                fragment = mFragmentFactory.createFragment(itemId);
+                transaction.add(mContainerId, fragment, tag);
+            }
+
+            mFragmentCache.put(itemId, fragment);
+        }
+
+        return fragment;
+    }
+
+    /**
+     * 隐藏除目标 Fragment 外的其它 Fragment
+     */
+    private void hideOtherFragments(FragmentTransaction transaction, Fragment targetFragment) {
+        for (Fragment fragment : mFragmentManager.getFragments()) {
+            if (isManagedFragment(fragment) && fragment != targetFragment) {
+                transaction.hide(fragment);
+            }
+        }
+    }
+
+    /**
+     * 判断 Fragment 是否由当前工具类管理
+     */
+    private boolean isManagedFragment(Fragment fragment) {
+        String tag = fragment.getTag();
+        return tag != null && tag.startsWith(FRAGMENT_TAG_PREFIX);
     }
 
     /**
@@ -184,12 +226,10 @@ public class FragmentSwitchHelper {
 
     /**
      * 获取当前显示的 Fragment 对应的 Tab ID
-     *
-     * @return 当前选中的Tab ID
      */
     private int getCurrentTabId() {
         for (Map.Entry<Integer, Fragment> entry : mFragmentCache.entrySet()) {
-            if (entry.getValue().equals(mCurrentFragment)) {
+            if (entry.getValue() == mCurrentFragment) {
                 return entry.getKey();
             }
         }
@@ -200,22 +240,20 @@ public class FragmentSwitchHelper {
      * 根据 Tab ID 生成对应的 Fragment Tag
      *
      * @param itemId Tab ID
-     * @return Fragment Tag
      */
     private String getFragmentTag(int itemId) {
-        return "FragmentSwitchHelper_" + itemId;
+        return FRAGMENT_TAG_PREFIX + itemId;
     }
 
     /**
-     * 设置 Fragment 创建工厂
+     * Fragment 创建工厂
      */
     public interface FragmentFactory {
 
         /**
-         * 根据 Tab ID 创建对应的Fragment
+         * 根据 Tab ID 创建对应的 Fragment
          *
          * @param itemId 选中的 Tab ID
-         * @return 创建的 Fragment
          */
         Fragment createFragment(int itemId);
     }
