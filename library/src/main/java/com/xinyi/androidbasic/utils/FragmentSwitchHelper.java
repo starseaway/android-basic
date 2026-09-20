@@ -129,6 +129,49 @@ public class FragmentSwitchHelper {
     }
 
     /**
+     * 预加载指定的 Fragment
+     *
+     * <p>
+     *   Fragment 会提前创建并加入 FragmentManager，同时保持隐藏状态。
+     *   后续切换时可直接显示，避免首次切换产生创建开销。
+     * <p>
+     *
+     * @param itemIds 需要预加载的 Tab ID
+     */
+    public void preload(int... itemIds) {
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        boolean changed = false;
+
+        for (int itemId : itemIds) {
+            String tag = getFragmentTag(itemId);
+
+            Fragment fragment = mFragmentCache.get(itemId);
+
+            if (fragment == null) {
+                fragment = mFragmentManager.findFragmentByTag(tag);
+
+                if (fragment == null) {
+                    fragment = mFragmentFactory.createFragment(itemId);
+                    transaction.add(mContainerId, fragment, tag);
+                    changed = true;
+                }
+
+                mFragmentCache.put(itemId, fragment);
+            }
+
+            // 预加载的 Fragment 必须保持隐藏
+            if (fragment.isAdded() && !fragment.isHidden()) {
+                transaction.hide(fragment);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            transaction.commit();
+        }
+    }
+
+    /**
      * 保存当前选中的 Tab ID
      *
      * @param outState 存储实例状态
@@ -167,6 +210,7 @@ public class FragmentSwitchHelper {
      * 设置 Fragment 创建工厂
      */
     public interface FragmentFactory {
+
         /**
          * 根据 Tab ID 创建对应的Fragment
          *
