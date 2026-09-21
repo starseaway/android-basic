@@ -62,12 +62,7 @@ abstract class BaseConstraintLayout : ConstraintLayout, Handler.Callback, Activi
      */
     private fun initialize(attrs: AttributeSet?) {
         inflateLayoutContentView()
-
-        initThreadHandler()
         initStyledAttributes(attrs)
-        initViews()
-        initParams()
-        initListeners()
     }
 
     /**

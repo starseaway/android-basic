@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.4.2-blue)
+![Version](https://img.shields.io/badge/version-2.4.3-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -50,11 +50,11 @@ maven {
 
 ### 2. 在 `build.gradle` (Module 级) 中添加依赖：
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.4.2'
+implementation 'com.github.starseaway:android-basic:2.4.3'
 ```
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.4.2")
+implementation("com.github.starseaway:android-basic:2.4.3")
 ```
 
 ### 3. 初始化模块
@@ -311,7 +311,7 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 
 ## 六、版本变更记录
 
-### V2.4.2 (2026-09-14)
+### V2.4.3 (2026-09-14)
 - ✨ feat: 封装返回键连击监听功能
 
 ### V2.4.1 (2026-09-12)
