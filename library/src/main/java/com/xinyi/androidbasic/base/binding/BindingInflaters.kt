@@ -10,9 +10,12 @@ import java.lang.reflect.InvocationTargetException
 /**
  * ViewBinding 统一加载工具
  *
- * 优先通过反射，调用类的 `inflate(LayoutInflater, ViewGroup, Boolean)`。
- * 仅当消费方启用了 DataBinding（存在 `DataBinderMapperImpl`）时，才回退到
- * [DataBindingUtil.inflate] 以兼容 `<layout>` 布局；纯 ViewBinding 工程不再强依赖 DataBinding。
+ * 优先通过反射调用 ViewBinding 的 `inflate`：
+ * 普通布局为 `inflate(LayoutInflater, ViewGroup, Boolean)`，
+ * `<merge>` 布局只有 `inflate(LayoutInflater, ViewGroup)`，必须带 parent 且 attach。
+ *
+ * 仅当绑定类不存在、且消费方启用了 DataBinding 时，才回退到
+ * [DataBindingUtil.inflate] 以兼容 `<layout>` 根布局。
  *
  * @author 杨耿雷
  * @date 2026/7/7 13:52
@@ -43,65 +46,119 @@ object BindingInflaters {
     ): VB {
         val layoutName = context.resources.getResourceEntryName(layoutId)
         val bindingClassName = layoutNameToBindingClassName(context.packageName, layoutName)
+        val classLoader = context.applicationContext.classLoader ?: context.javaClass.classLoader
 
-        var reflectionError: Throwable
-        try {
-            return inflateByReflection(
-                context = context,
-                bindingClassName = bindingClassName,
-                inflater = inflater,
-                parent = parent,
-                attachToParent = attachToParent,
-            ) as VB
+        val bindingClass = try {
+            Class.forName(bindingClassName, false, classLoader)
         } catch (throwable: Throwable) {
-            reflectionError = unwrapReflectException(throwable)
-        }
-
-        if (isDataBindingAvailable(context)) {
-            try {
-                return DataBindingUtil.inflate(inflater, layoutId, parent, attachToParent) as VB
-            } catch (throwable: Throwable) {
-                throw IllegalStateException(
-                    "无法加载布局绑定类：$bindingClassName（layout=$layoutName）",
-                    throwable.initCauseIfNeeded(reflectionError),
+            val error = unwrapReflectException(throwable)
+            if (error is ClassNotFoundException || error is NoClassDefFoundError) {
+                return inflateByDataBindingOrThrow(
+                    context = context,
+                    layoutId = layoutId,
+                    inflater = inflater,
+                    parent = parent,
+                    attachToParent = attachToParent,
+                    bindingClassName = bindingClassName,
+                    layoutName = layoutName,
+                    missingClass = error,
                 )
             }
+            throw error
         }
 
-        throw IllegalStateException(
-            "无法通过 ViewBinding 反射加载：$bindingClassName（layout=$layoutName）。" +
-                "当前工程未启用 DataBinding，已跳过 DataBindingUtil 回退。",
-            reflectionError,
-        )
+        try {
+            return inflateByReflection(bindingClass, inflater, parent, attachToParent) as VB
+        } catch (throwable: Throwable) {
+            // 方法已找到但 inflate 失败，或 merge 签名不匹配，都直接抛真实异常
+            throw unwrapReflectException(throwable)
+        }
+    }
+
+    /**
+     * 绑定类不存在时，尝试 DataBinding 回退；未启用则说明 ViewBinding 类未生成
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun <VB : ViewBinding> inflateByDataBindingOrThrow(
+        context: Context,
+        layoutId: Int,
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+        attachToParent: Boolean,
+        bindingClassName: String,
+        layoutName: String,
+        missingClass: Throwable,
+    ): VB {
+        if (!isDataBindingAvailable(context)) {
+            throw IllegalStateException(
+                "找不到 ViewBinding 类 $bindingClassName（layout=$layoutName）",
+                missingClass,
+            )
+        }
+        try {
+            return DataBindingUtil.inflate(inflater, layoutId, parent, attachToParent) as VB
+        } catch (throwable: Throwable) {
+            val dataBindingError = unwrapReflectException(throwable)
+            throw dataBindingError.initCauseIfNeeded(missingClass)
+        }
     }
 
     /**
      * 通过反射加载 ViewBinding
      *
-     * @param context 用于获取 ClassLoader
-     * @param bindingClassName 绑定类全名
+     * @param bindingClass 绑定类
      * @param inflater LayoutInflater
      * @param parent 父容器，可为 null
      * @param attachToParent 是否附加到父布局
-     * @return 绑定的 ViewBinding 对象
      */
     private fun inflateByReflection(
-        context: Context,
-        bindingClassName: String,
+        bindingClass: Class<*>,
         inflater: LayoutInflater,
         parent: ViewGroup?,
         attachToParent: Boolean,
     ): ViewBinding {
-        val classLoader = context.applicationContext.classLoader ?: context.javaClass.classLoader
-        val bindingClass = Class.forName(bindingClassName, false, classLoader)
-        val inflateMethod = bindingClass.getMethod(
+        val threeArg = findMethodOrNull(
+            bindingClass,
             "inflate",
             LayoutInflater::class.java,
             ViewGroup::class.java,
             java.lang.Boolean.TYPE,
         )
-        @Suppress("UNCHECKED_CAST")
-        return inflateMethod.invoke(null, inflater, parent, attachToParent) as ViewBinding
+        if (threeArg != null) {
+            return threeArg.invoke(null, inflater, parent, attachToParent) as ViewBinding
+        }
+
+        // <merge> 布局只生成 inflate(LayoutInflater, ViewGroup)
+        val twoArg = findMethodOrNull(
+            bindingClass,
+            "inflate",
+            LayoutInflater::class.java,
+            ViewGroup::class.java,
+        ) ?: throw NoSuchMethodException(
+            "${bindingClass.name}.inflate(LayoutInflater, ViewGroup) 或 inflate(LayoutInflater, ViewGroup, boolean)",
+        )
+
+        if (parent == null || !attachToParent) {
+            throw IllegalArgumentException(
+                "${bindingClass.name} 是 merge 布局的 ViewBinding，必须传入 parent 且 attachToParent=true",
+            )
+        }
+        return twoArg.invoke(null, inflater, parent) as ViewBinding
+    }
+
+    /**
+     * 查找方法；不存在时返回 null
+     */
+    private fun findMethodOrNull(
+        bindingClass: Class<*>,
+        name: String,
+        vararg parameterTypes: Class<*>,
+    ): java.lang.reflect.Method? {
+        return try {
+            bindingClass.getMethod(name, *parameterTypes)
+        } catch (_: NoSuchMethodException) {
+            null
+        }
     }
 
     /**
@@ -144,11 +201,15 @@ object BindingInflaters {
     }
 
     /**
-     * 若尚未设置 cause，则补上反射阶段异常，便于排查
+     * 若尚未设置 cause，则补上先前异常，便于排查
      */
     private fun Throwable.initCauseIfNeeded(cause: Throwable?): Throwable {
         if (cause != null && this.cause == null) {
-            initCause(cause)
+            try {
+                initCause(cause)
+            } catch (_: IllegalStateException) {
+                // 已有 cause 时忽略
+            }
         }
         return this
     }
