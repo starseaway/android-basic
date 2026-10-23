@@ -311,6 +311,9 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 
 ## 六、版本变更记录
 
+### V2.4.5 (2026-10-23)
+- 🐞 fix: 修复 BaseDialog 关闭后再 show 时 ThreadHandler 未重建，导致工作线程消息无法发送的问题。
+
 ### V2.4.4 (2026-09-30)
 - 🐞 fix: 修复 JitPack 发布的 .module 中源码、文档变体地址错误，导致 IDE 无法下载源码的问题
 - 🦄 refactor: 新增 maven-publish 显式发布 release 组件，artifactId 与仓库名保持一致，避免 JitPack 自动改名改写元数据

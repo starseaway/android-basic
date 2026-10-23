@@ -138,13 +138,20 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (mThreadHandler == null) {
-            mThreadHandler = ThreadHandler.createHandler(this, this::class.java.simpleName)
-        }
+        ensureThreadHandler()
 
         initViews()
         initParams()
         initListeners()
+    }
+
+    /**
+     * 确保工作线程 Handler 已创建
+     */
+    private fun ensureThreadHandler() {
+        if (mThreadHandler == null) {
+            mThreadHandler = ThreadHandler.createHandler(this, this::class.java.simpleName)
+        }
     }
 
     override fun getThreadHandler(): ThreadHandler? {
@@ -334,6 +341,12 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
      */
     fun setBackgroundDimAmount(@FloatRange(from = 0.0, to = 1.0) dimAmount: Float) {
         window?.setDimAmount(dimAmount)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        ensureThreadHandler()
     }
     
     override fun onStop() {
