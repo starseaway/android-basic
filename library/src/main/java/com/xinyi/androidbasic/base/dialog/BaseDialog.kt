@@ -348,10 +348,11 @@ abstract class BaseDialog : AppCompatDialog, Handler.Callback, ThreadHandlerProx
 
         ensureThreadHandler()
     }
-    
-    override fun onStop() {
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
         mThreadHandler?.quitSafely()
         mThreadHandler = null
-        super.onStop()
     }
 }
