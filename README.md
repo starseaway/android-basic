@@ -87,7 +87,9 @@ android {
 ```kotlin
 android {
     defaultConfig {
-        manifestPlaceholders["appNamespace"] = namespace
+        manifestPlaceholders["appNamespace"] = requireNotNull(namespace) {
+            "Android namespace must be configured."
+        }
     }
 }
 ```
