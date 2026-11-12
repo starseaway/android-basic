@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.4.8-blue)
+![Version](https://img.shields.io/badge/version-2.4.9-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -40,27 +40,63 @@
 
 ## 三、集成方式
 
-### 1. 根据 Gradle 版本或项目配置自行选择在合适的位置添加仓库地址
+### 1. 配置仓库地址
+
+根据 Gradle 版本或项目配置，在合适的位置添加仓库地址：
+
 ```groovy
 maven {
-    // jitpack仓库
-    url 'https://jitpack.io' 
+    // JitPack 仓库
+    url 'https://jitpack.io'
 }
 ```
 
-### 2. 在 `build.gradle` (Module 级) 中添加依赖：
+### 2. 添加模块依赖
+
+在 `build.gradle`（Module 级）中添加依赖：
+
+**Groovy**
+
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.4.8'
+implementation 'com.github.starseaway:android-basic:2.4.9'
 ```
+
+**Kotlin**
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.4.8")
+implementation("com.github.starseaway:android-basic:2.4.9")
 ```
 
-### 3. 初始化模块
+### 3. 配置宿主 App namespace
+
+> [!IMPORTANT]
+> **必须配置：** 为兼容多变体下不同 `applicationId` 的情况，需要在 App 模块的 Gradle 配置中提供宿主 App 的 `namespace`。
+
+**Groovy**
+
+```groovy
+android {
+    defaultConfig {
+        manifestPlaceholders = [appNamespace: namespace]
+    }
+}
+```
+
+**Kotlin**
+
+```kotlin
+android {
+    defaultConfig {
+        manifestPlaceholders["appNamespace"] = namespace
+    }
+}
+```
+
+### 4. 初始化模块
+
 ```kotlin
 class AppApplication : Application() {
-    
+
     override fun onCreate() {
         super.onCreate()
         // 初始化 AppContext
@@ -310,7 +346,12 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 ---
 
 ## 六、版本变更记录
-### V2.4.7 (2026-11-12)
+
+### V2.4.9 (2026-11-12)
+- ✨ feat: 支持自动获取宿主 App namespace
+- 🐞 fix: 修复多变体下 ViewBinding 类路径错误的问题
+
+### V2.4.8 (2026-11-12)
 - 🦄 refactor: 恢复至上一个版本的代码
 
 ### V2.4.7 (2026-11-12)
