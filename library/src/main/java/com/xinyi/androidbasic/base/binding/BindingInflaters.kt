@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
+import com.xinyi.androidbasic.app.AppContext
 import java.lang.reflect.InvocationTargetException
 
 /**
@@ -19,6 +20,18 @@ import java.lang.reflect.InvocationTargetException
  * @date 2026/7/7 13:52
  */
 object BindingInflaters {
+
+    /**
+     * 宿主 App 的 namespace 缓存
+     */
+    private val appNamespace: String by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        getHostAppNamespace()
+    }
+
+    /**
+     * 宿主 App namespace 对应的 Meta-data 名称
+     */
+    private const val META_HOST_APP_NAMESPACE = "com.xinyi.androidbasic.HOST_APP_NAMESPACE"
 
     /**
      * DataBinding 聚合 Mapper 的类名；仅在消费方开启 dataBinding 时由 AGP 生成。
@@ -42,7 +55,7 @@ object BindingInflaters {
         attachToParent: Boolean,
     ): VB {
         val layoutName = context.resources.getResourceEntryName(layoutId)
-        val bindingClassName = layoutNameToBindingClassName(context.packageName, layoutName)
+        val bindingClassName = layoutNameToBindingClassName(layoutName)
 
         var reflectionError: Throwable
         try {
@@ -122,14 +135,36 @@ object BindingInflaters {
     /**
      * 将布局名称转换为绑定类名称
      *
-     * @param packageName 包名
      * @param layoutName 布局名称
      * @return 绑定类名称
      */
-    private fun layoutNameToBindingClassName(packageName: String, layoutName: String): String {
+    private fun layoutNameToBindingClassName(layoutName: String): String {
         val className = layoutName.split('_')
-            .joinToString("") { segment -> segment.replaceFirstChar { it.uppercaseChar() } }
-        return "$packageName.databinding.${className}Binding"
+            .joinToString("") { segment ->
+                segment.replaceFirstChar { it.uppercaseChar() }
+            }
+        return "$appNamespace.databinding.${className}Binding"
+    }
+
+    /**
+     * 获取宿主 App 的 namespace
+     *
+     * @return 宿主 App 的 namespace
+     */
+    private fun getHostAppNamespace(): String {
+        val context = AppContext.sApplication
+        val applicationInfo = context.packageManager.getApplicationInfo(
+            context.packageName,
+            android.content.pm.PackageManager.GET_META_DATA
+        )
+
+        val namespace = applicationInfo.metaData?.getString(META_HOST_APP_NAMESPACE)
+
+        // 由于多变体可能使用不同的 applicationId，所以需要通过 namespace 定位 ViewBinding 生成类。
+        return requireNotNull(namespace) {
+            "Missing host app namespace. Please configure " +
+                    """manifestPlaceholders["appNamespace"] = namespace in app/build.gradle.kts."""
+        }
     }
 
     /**
