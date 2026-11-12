@@ -311,7 +311,7 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 
 ## 六、版本变更记录
 
-### V2.4.6 (2006-11-12)
+### V2.4.6 (2026-11-12)
 - 🐞 fix: 修复多 Flavor 下 Binding 类路径获取错误的问题
 - ✨ feat: 支持通过泛型自动解析 ViewBinding 类型
 
