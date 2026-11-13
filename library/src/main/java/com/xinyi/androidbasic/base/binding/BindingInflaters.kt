@@ -53,33 +53,19 @@ object BindingInflaters {
         attachToParent: Boolean,
     ): VB {
         val layoutName = context.resources.getResourceEntryName(layoutId)
-        val bindingClassNames = layoutNameToBindingClassNames(context, layoutName)
+        val bindingClassName = layoutNameToBindingClassName(context, layoutName)
 
-        var reflectionError: Throwable? = null
-
-        // 依次尝试候选 Binding 类路径，仅在类不存在时继续尝试。
-        for (bindingClassName in bindingClassNames) {
-            try {
-                return inflateByReflection(
-                    context = context,
-                    bindingClassName = bindingClassName,
-                    inflater = inflater,
-                    parent = parent,
-                    attachToParent = attachToParent,
-                ) as VB
-            } catch (throwable: Throwable) {
-                val error = unwrapReflectException(throwable)
-                reflectionError = error
-
-                // 类不存在时继续尝试下一个候选路径，其他异常直接终止。
-                if (error !is ClassNotFoundException) {
-                    break
-                }
-            }
-        }
-
-        val error = requireNotNull(reflectionError) {
-            "No ViewBinding class candidates found for layout: $layoutName"
+        var reflectionError: Throwable
+        try {
+            return inflateByReflection(
+                context = context,
+                bindingClassName = bindingClassName,
+                inflater = inflater,
+                parent = parent,
+                attachToParent = attachToParent,
+            ) as VB
+        } catch (throwable: Throwable) {
+            reflectionError = unwrapReflectException(throwable)
         }
 
         if (isDataBindingAvailable(context)) {
@@ -87,16 +73,16 @@ object BindingInflaters {
                 return DataBindingUtil.inflate(inflater, layoutId, parent, attachToParent) as VB
             } catch (throwable: Throwable) {
                 throw IllegalStateException(
-                    "无法加载布局绑定类：$bindingClassNames（layout=$layoutName）",
-                    throwable.initCauseIfNeeded(error),
+                    "无法加载布局绑定类：$bindingClassName（layout=$layoutName）",
+                    throwable.initCauseIfNeeded(reflectionError),
                 )
             }
         }
 
         throw IllegalStateException(
-            "无法通过 ViewBinding 反射加载：$bindingClassNames（layout=$layoutName）。" +
+            "无法通过 ViewBinding 反射加载：$bindingClassName（layout=$layoutName）。" +
                     "当前工程未启用 DataBinding，已跳过 DataBindingUtil 回退。",
-            error,
+            reflectionError,
         )
     }
 
@@ -151,23 +137,15 @@ object BindingInflaters {
      * @param layoutName 布局名称
      * @return 绑定类名称
      */
-    private fun layoutNameToBindingClassNames(context: Context, layoutName: String): List<String> {
+    private fun layoutNameToBindingClassName(context: Context, layoutName: String): String {
         val className = layoutName.split('_')
             .joinToString("") { segment ->
                 segment.replaceFirstChar { it.uppercaseChar() }
             }
 
-        return buildList {
-            // 优先使用 namespace
-            runCatching {
-                getHostAppNamespace(context)
-            }.getOrNull()?.let {
-                add("$it.databinding.${className}Binding")
-            }
+        val appNamespace = getHostAppNamespace(context)
 
-            // 兼容 applicationId 与 namespace 一致的项目及布局预览
-            add("${context.packageName}.databinding.${className}Binding")
-        }.distinct()
+        return "$appNamespace.databinding.${className}Binding"
     }
 
     /**
