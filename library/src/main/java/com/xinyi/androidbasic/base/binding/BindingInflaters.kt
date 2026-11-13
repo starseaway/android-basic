@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
-import com.xinyi.androidbasic.app.AppContext
 import java.lang.reflect.InvocationTargetException
 
 /**
