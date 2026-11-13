@@ -53,7 +53,7 @@ object BindingInflaters {
         attachToParent: Boolean,
     ): VB {
         val layoutName = context.resources.getResourceEntryName(layoutId)
-        val bindingClassName = layoutNameToBindingClassName(context, layoutName)
+        val bindingClassName = layoutNameToBindingClassNames(context, layoutName).first()
 
         var reflectionError: Throwable
         try {
@@ -137,15 +137,23 @@ object BindingInflaters {
      * @param layoutName 布局名称
      * @return 绑定类名称
      */
-    private fun layoutNameToBindingClassName(context: Context, layoutName: String): String {
+    private fun layoutNameToBindingClassNames(context: Context, layoutName: String): List<String> {
         val className = layoutName.split('_')
             .joinToString("") { segment ->
                 segment.replaceFirstChar { it.uppercaseChar() }
             }
 
-        val appNamespace = getHostAppNamespace(context)
+        return buildList {
+            // 优先使用 namespace
+            runCatching {
+                getHostAppNamespace(context)
+            }.getOrNull()?.let {
+                add("$it.databinding.${className}Binding")
+            }
 
-        return "$appNamespace.databinding.${className}Binding"
+            // 兼容 applicationId 与 namespace 一致的项目及布局预览
+            add("${context.packageName}.databinding.${className}Binding")
+        }.distinct()
     }
 
     /**
