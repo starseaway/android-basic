@@ -53,19 +53,33 @@ object BindingInflaters {
         attachToParent: Boolean,
     ): VB {
         val layoutName = context.resources.getResourceEntryName(layoutId)
-        val bindingClassName = layoutNameToBindingClassNames(context, layoutName).first()
+        val bindingClassNames = layoutNameToBindingClassNames(context, layoutName)
 
-        var reflectionError: Throwable
-        try {
-            return inflateByReflection(
-                context = context,
-                bindingClassName = bindingClassName,
-                inflater = inflater,
-                parent = parent,
-                attachToParent = attachToParent,
-            ) as VB
-        } catch (throwable: Throwable) {
-            reflectionError = unwrapReflectException(throwable)
+        var reflectionError: Throwable? = null
+
+        // 依次尝试候选 Binding 类路径，仅在类不存在时继续尝试。
+        for (bindingClassName in bindingClassNames) {
+            try {
+                return inflateByReflection(
+                    context = context,
+                    bindingClassName = bindingClassName,
+                    inflater = inflater,
+                    parent = parent,
+                    attachToParent = attachToParent,
+                ) as VB
+            } catch (throwable: Throwable) {
+                val error = unwrapReflectException(throwable)
+                reflectionError = error
+
+                // 类不存在时继续尝试下一个候选路径，其他异常直接终止。
+                if (error !is ClassNotFoundException) {
+                    break
+                }
+            }
+        }
+
+        val error = requireNotNull(reflectionError) {
+            "No ViewBinding class candidates found for layout: $layoutName"
         }
 
         if (isDataBindingAvailable(context)) {
@@ -73,16 +87,16 @@ object BindingInflaters {
                 return DataBindingUtil.inflate(inflater, layoutId, parent, attachToParent) as VB
             } catch (throwable: Throwable) {
                 throw IllegalStateException(
-                    "无法加载布局绑定类：$bindingClassName（layout=$layoutName）",
-                    throwable.initCauseIfNeeded(reflectionError),
+                    "无法加载布局绑定类：$bindingClassNames（layout=$layoutName）",
+                    throwable.initCauseIfNeeded(error),
                 )
             }
         }
 
         throw IllegalStateException(
-            "无法通过 ViewBinding 反射加载：$bindingClassName（layout=$layoutName）。" +
+            "无法通过 ViewBinding 反射加载：$bindingClassNames（layout=$layoutName）。" +
                     "当前工程未启用 DataBinding，已跳过 DataBindingUtil 回退。",
-            reflectionError,
+            error,
         )
     }
 
