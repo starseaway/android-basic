@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.4.12-blue)
+![Version](https://img.shields.io/badge/version-2.4.13-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -58,13 +58,13 @@ maven {
 **Groovy**
 
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.4.12'
+implementation 'com.github.starseaway:android-basic:2.4.13'
 ```
 
 **Kotlin**
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.4.12")
+implementation("com.github.starseaway:android-basic:2.4.13")
 ```
 
 ### 3. 配置宿主 App namespace
@@ -348,6 +348,9 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 ---
 
 ## 六、版本变更记录
+
+### V2.4.13 (2026-11-13)
+- 🦄 refactor: 恢复至 V2.4.9 版本的代码
 
 ### V2.4.12 (2026-11-13)
 - ✨ feat: 支持多路径自动解析 ViewBinding 类
