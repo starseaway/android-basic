@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import com.xinyi.androidbasic.base.adapter.with.RecyclerViewHolder
 
 /**
- * 支持给 RecyclerViewHolder 提供多种布局的 RecyclerView 适配器基类。
+ * 支持给 RV Holder 提供多种布局的 RV 适配器基类
  *
  * 该类基于 viewType 机制，为不同类型的数据项提供灵活的布局支持。
  * 子类只需实现对应的 viewType 和布局 ID 映射，即可轻松实现多条目展示。

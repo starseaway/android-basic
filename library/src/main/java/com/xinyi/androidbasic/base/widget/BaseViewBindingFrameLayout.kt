@@ -46,7 +46,7 @@ abstract class BaseViewBindingFrameLayout<VB : ViewBinding> : BaseFrameLayout {
      * @return 绑定的 ViewBinding 对象
      */
     protected open fun inflateBinding(inflater: LayoutInflater): VB {
-        return BindingInflaters.inflate(context, initLayoutId(), inflater, this, true)
+        return BindingInflaters.inflate(this, inflater, this, true)
     }
 
     /**

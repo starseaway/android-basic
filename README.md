@@ -4,7 +4,7 @@
   <img src="android-basic-logo.svg" width="500" alt="android-basic-logo">
 </div>
 
-![Version](https://img.shields.io/badge/version-2.4.13-blue)
+![Version](https://img.shields.io/badge/version-2.5.0-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![API](https://img.shields.io/badge/API-19%2B-brightgreen)
 
@@ -58,43 +58,16 @@ maven {
 **Groovy**
 
 ```groovy
-implementation 'com.github.starseaway:android-basic:2.4.13'
+implementation 'com.github.starseaway:android-basic:2.5.0'
 ```
 
 **Kotlin**
 
 ```kotlin
-implementation("com.github.starseaway:android-basic:2.4.13")
+implementation("com.github.starseaway:android-basic:2.5.0")
 ```
 
-### 3. 配置宿主 App namespace
-
-> [!IMPORTANT]
-> **必须配置：** 为兼容多变体下不同 `applicationId` 的情况，需要在 App 模块的 Gradle 配置中提供宿主 App 的 `namespace`。
-
-**Groovy**
-
-```groovy
-android {
-    defaultConfig {
-        manifestPlaceholders = [appNamespace: namespace]
-    }
-}
-```
-
-**Kotlin**
-
-```kotlin
-android {
-    defaultConfig {
-        manifestPlaceholders["appNamespace"] = requireNotNull(namespace) {
-            "Android namespace must be configured."
-        }
-    }
-}
-```
-
-### 4. 初始化模块
+### 3. 初始化模块
 
 ```kotlin
 class AppApplication : Application() {
@@ -119,11 +92,13 @@ class AppApplication : Application() {
 
 框架内提供了一套统一的 BaseActivity / BaseFragment 等体系，主要特性：
 - 内置 ViewBinding / DataBinding 支持
+- ViewBinding 通过宿主泛型中的 Binding Class 自动 inflate，不依赖 `applicationId` / namespace / Manifest Meta-data 拼路径
+- 仅有 layoutId、未传 Binding Class 时，可回退 DataBinding 官方 Mapper（需工程启用 DataBinding）
 - 生命周期结构统一（initViews / initListeners 等）
 - 集成 HandlerThread 异步消息处理能力
 - 支持消息回调与 UI 更新解耦
 
-适用于页面结构标准化，以及轻量级异步任务处理场景。
+适用于页面结构标准化，以及轻量级异步任务处理场景；多 Flavor（`applicationId` 与 `namespace` 不一致）下同样适用。
 
 ### 2. Fragment 切换（多 Tab / 多页面）
 
@@ -223,24 +198,38 @@ class TestMultiLayoutBindingAdapter(context: Context?) : BaseMultiLayoutBindingA
     }
 
     override fun onRegisterViewBindingType() {
+        // 推荐：reified 注册，内部自动传入 Binding Class
         registerViewType<TestItem1Binding>(TYPE_1, R.layout.test_item_1) { binding, item, position ->
 
         }
-        registerViewType(TYPE_2, LambdaViewBindingItem<String, TestItem2Binding>(
-            layoutId = R.layout.test_item_2,
-            onBindViewData = { binding, item, position ->
+        // 等价写法：直接构造 LambdaViewBindingItem 时必须显式传入 bindingClass
+        registerViewType(
+            TYPE_2,
+            LambdaViewBindingItem(
+                layoutId = R.layout.test_item_2,
+                bindingClass = TestItem2Binding::class.java,
+                onBindViewData = { binding, item, position ->
 
-            }
-        ))
-        registerViewType(TYPE_3, LambdaViewBindingItem<String, TestItem3Binding>(
-            layoutId = R.layout.test_item_3,
-            onBindViewData = { binding, item, position ->
+                },
+            ),
+        )
+        registerViewType(
+            TYPE_3,
+            LambdaViewBindingItem(
+                layoutId = R.layout.test_item_3,
+                bindingClass = TestItem3Binding::class.java,
+                onBindViewData = { binding, item, position ->
 
-            }
-        ))
+                },
+            ),
+        )
     }
 }
 ```
+
+> **为何 `LambdaViewBindingItem` 要传 Binding Class？**  
+> 它是库内现成的具体类，构造时的 `<VB>` 会被 JVM 擦除，运行时无法像 `BaseViewBindingAdapter<…, XxxBinding>` 子类那样从继承链解析出 Binding 类型。  
+> 推荐优先使用 `registerViewType<XxxBinding>(viewType, layoutId) { … }`（inline reified），由框架代为传入 `VB::class.java`；只有直接 `LambdaViewBindingItem(...)` 时才需要手写 `bindingClass`。
 
 ### 3. 多 ViewHolder 模式（高自由度）
 
@@ -271,10 +260,10 @@ class TestMultiHolderAdapter(context: Context?) : BaseAdapter<String, RecyclerVi
 
     override fun onCreateView(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            TYPE_1 -> ViewBindingViewHolder<TestItem1Binding>(R.layout.test_item_1, parent)
-            TYPE_2 -> ViewBindingViewHolder<TestItem2Binding>(R.layout.test_item_2, parent)
+            TYPE_1 -> ViewBindingViewHolder.create<TestItem1Binding>(parent)
+            TYPE_2 -> ViewBindingViewHolder.create<TestItem2Binding>(parent)
             TYPE_3 -> TestViewBindingViewHolder(parent)
-            else -> ViewBindingViewHolder<TestItem3Binding>(R.layout.test_item_3, parent)
+            else -> ViewBindingViewHolder.create<TestItem3Binding>(parent)
         }
     }
 
@@ -348,6 +337,14 @@ class SelectAdapter(context: Context?) : BaseViewBindingAdapter<SelectItem, Item
 ---
 
 ## 六、版本变更记录
+
+### V2.5.0 (2026-11-18)
+- 🦄 refactor: 基于泛型解析 ViewBinding 类型，替代 namespace 路径推导
+- 🦄 refactor: 拆分 Binding 加载与类型解析职责
+- ✨ feat: 支持 Adapter / ViewHolder 自动加载 ViewBinding，保留布局 ID 接口
+- ✨ feat: 兼容 `<merge>` 布局的反射加载
+- 🧹 remove: 移除 `HOST_APP_NAMESPACE` 集成配置
+- ✅ verify: 增加多变体测试，验证 Binding 加载及布局预览
 
 ### V2.4.13 (2026-11-13)
 - 🦄 refactor: 恢复至 V2.4.9 版本的代码

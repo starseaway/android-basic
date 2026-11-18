@@ -17,6 +17,24 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // 双渠道：验证 applicationId ≠ namespace 时 VB / 自定义控件仍可用
+    flavorDimensions "channel"
+    productFlavors {
+        beta {
+            dimension "channel"
+            applicationId "com.xinyi.app.beta"
+            resValue "string", "flavor_label", "内测渠道"
+            buildConfigField "String", "FLAVOR_NAME", "\"beta\""
+        }
+
+        store {
+            dimension "channel"
+            applicationId "com.xinyi.app.store"
+            resValue "string", "flavor_label", "商店渠道"
+            buildConfigField "String", "FLAVOR_NAME", "\"store\""
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,19 +52,13 @@ android {
 
     buildFeatures {
         viewBinding true
-        dataBinding true
+        buildConfig true
     }
 }
 
 dependencies {
     implementation libs.appcompat
     implementation libs.material
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
-
-    // 任务调度库
-    implementation libs.task.beehive
 
     implementation project(':library')
 }

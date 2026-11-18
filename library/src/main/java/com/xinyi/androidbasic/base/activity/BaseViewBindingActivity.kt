@@ -37,7 +37,7 @@ abstract class BaseViewBindingActivity<VB : ViewBinding> : BaseResultActivity() 
      * @return 绑定的 ViewBinding 对象
      */
     protected open fun inflateBinding(inflater: LayoutInflater): VB {
-        return BindingInflaters.inflate(this, initLayoutId(), inflater, null, false)
+        return BindingInflaters.inflate(this, inflater, null, false)
     }
 
     /**

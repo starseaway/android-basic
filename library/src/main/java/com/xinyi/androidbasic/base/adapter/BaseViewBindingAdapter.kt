@@ -1,9 +1,11 @@
 package com.xinyi.androidbasic.base.adapter
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
+import com.xinyi.androidbasic.base.binding.BindingInflaters
 
 /**
  * 单布局的 ViewBindingViewHolder 的适配器基类
@@ -29,9 +31,9 @@ abstract class BaseViewBindingAdapter<M, VB : ViewBinding> : BaseAdapter<M, View
     constructor(listBeans: MutableList<M>, context: Context?) : super(listBeans, context)
 
     /**
-     * 初始化布局ID
+     * 初始化布局 ID
      *
-     * @return 返回ID
+     * @return 返回 ID
      */
     abstract fun initLayoutId(): Int
 
@@ -42,8 +44,13 @@ abstract class BaseViewBindingAdapter<M, VB : ViewBinding> : BaseAdapter<M, View
      * @param viewType 当前 item 类型
      */
     override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<VB> {
-        // 创建ViewHolder
-        return ViewBindingViewHolder(initLayoutId(), parent)
+        val binding = BindingInflaters.inflate<VB>(
+            this,
+            LayoutInflater.from(parent.context),
+            parent,
+            false,
+        )
+        return ViewBindingViewHolder(binding)
     }
 
     /**

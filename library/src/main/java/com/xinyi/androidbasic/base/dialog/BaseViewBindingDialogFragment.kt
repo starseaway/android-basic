@@ -39,7 +39,7 @@ abstract class BaseViewBindingDialogFragment<VB : ViewBinding> : BaseDialogFragm
      * @return 绑定的 ViewBinding 对象
      */
     protected open fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): VB {
-        return BindingInflaters.inflate(requireContext(), initLayoutId(), inflater, container, false)
+        return BindingInflaters.inflate(this, inflater, container, false)
     }
 
     /**

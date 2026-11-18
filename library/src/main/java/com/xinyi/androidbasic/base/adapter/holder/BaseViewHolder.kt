@@ -31,8 +31,8 @@ abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     /**
      * 布局资源 ID 创建 ViewHolder 的构造函数
      *
-     * @param layoutId 布局资源 ID（R.layout.xxx）
-     * @param parent 父布局，用于获取 Context 和作为布局的根容器
+     * @param layoutId 布局资源 ID
+     * @param parent 父布局
      */
     constructor(
         @LayoutRes layoutId: Int,

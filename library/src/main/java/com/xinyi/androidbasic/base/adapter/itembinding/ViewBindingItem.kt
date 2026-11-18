@@ -1,5 +1,7 @@
 package com.xinyi.androidbasic.base.adapter.itembinding
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 
 /**
@@ -19,6 +21,14 @@ interface ViewBindingItem<M, VB : ViewBinding> {
      * 当前条目的布局资源 ID
      */
     fun initLayoutId(): Int
+
+    /**
+     * 创建当前条目的 ViewBinding
+     *
+     * @param inflater 布局加载器
+     * @param parent 父容器
+     */
+    fun inflate(inflater: LayoutInflater, parent: ViewGroup): VB
 
     /**
      * 将数据绑定到当前条目的视图上

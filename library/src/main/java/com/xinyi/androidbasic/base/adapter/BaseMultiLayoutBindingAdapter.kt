@@ -1,6 +1,7 @@
 package com.xinyi.androidbasic.base.adapter
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.xinyi.androidbasic.base.adapter.itembinding.ViewBindingItem
@@ -13,7 +14,7 @@ import com.xinyi.androidbasic.base.adapter.with.ViewBindingViewHolder
  * 该类基于 viewType 机制，为不同类型的数据项提供灵活的布局支持
  * 子类只需实现对应的 viewType 和布局 ID 映射，即可轻松实现多条目展示
  *
- * 子类不无需要关注 [onCreateView] [onBindViewData] 方法的实现
+ * 子类无需要关注 [onCreateView] [onBindViewData] 方法的实现
  * 通常情况下，子类只需实现 [getViewTypeForPosition] 和 [onRegisterViewBindingType] 方法即可
  *
  * @author 新一
@@ -72,18 +73,16 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
     /**
      * 注册某个 ViewType 对应的布局绑定器
      *
-     * 在 [onRegisterViewBindingType] 方法中调用，用于为不同的 ViewType 设置对应的绑定行为
-     *
      * @param viewType 唯一的视图类型标识（通常使用 Int 常量）
      * @param layoutId 当前视图类型的布局 ID
      * @param onBindViewData 当前视图类型的数据绑定逻辑
      */
-    fun <VB : ViewBinding> registerViewType(
+    inline fun <reified VB : ViewBinding> registerViewType(
         viewType: Int,
         layoutId: Int,
-        onBindViewData: (binding: VB, item: M, position: Int) -> Unit,
+        noinline onBindViewData: (binding: VB, item: M, position: Int) -> Unit,
     ) {
-        registerViewType(viewType, LambdaViewBindingItem(layoutId, onBindViewData))
+        registerViewType(viewType, LambdaViewBindingItem(layoutId, VB::class.java, onBindViewData))
     }
 
     /**
@@ -92,7 +91,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * 在 [onRegisterViewBindingType] 方法中调用，用于为不同的 ViewType 设置对应的绑定行为
      *
      * @param viewType 唯一的视图类型标识（通常使用 Int 常量）
-     * @param item 当前视图类型的绑定行为，封装了布局 ID 与数据绑定逻辑
+     * @param item 当前视图类型的绑定行为
      */
     fun <VB : ViewBinding> registerViewType(viewType: Int, item: LambdaViewBindingItem<M, VB>) {
         mItemTypeMap[viewType] = item
@@ -104,7 +103,7 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      * 在 [onRegisterViewBindingType] 方法中调用，用于为不同的 ViewType 设置对应的绑定行为
      *
      * @param viewType 唯一的视图类型标识（通常使用 Int 常量）
-     * @param item 当前视图类型的绑定行为，封装了布局 ID 与数据绑定逻辑
+     * @param item 当前视图类型的绑定行为，封装了 Binding 创建与数据绑定逻辑
      */
     fun <VB : ViewBinding> registerViewType(viewType: Int, item: ViewBindingItem<M, VB>) {
         mItemTypeMap[viewType] = item
@@ -130,7 +129,8 @@ abstract class BaseMultiLayoutBindingAdapter<M> : BaseAdapter<M, ViewBindingView
      */
     override fun onCreateView(parent: ViewGroup, viewType: Int): ViewBindingViewHolder<ViewBinding> {
         val item = getViewBindingItem(viewType)
-        return ViewBindingViewHolder(item.initLayoutId(), parent)
+        val binding = item.inflate(LayoutInflater.from(parent.context), parent)
+        return ViewBindingViewHolder(binding)
     }
 
     /**

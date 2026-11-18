@@ -7,6 +7,7 @@ appcompat = "1.6.1"
 material = "1.9.0"
 kotlin = "1.9.25"
 kapt = "1.9.25"
+recyclerview = "1.3.2"
 taskBeehive = "2.0.1"
 
 [libraries]
@@ -15,6 +16,7 @@ ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitV
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 task-beehive = { module = "com.github.starseaway:task-beehive", version.ref = "taskBeehive" }
 
 [plugins]
